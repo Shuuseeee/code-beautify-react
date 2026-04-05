@@ -28,6 +28,10 @@ export function useHistory() {
 
   const addEntry = useCallback((input: string, output: string, lang: string) => {
     setHistory((prev) => {
+      // Skip if identical to the most recent entry (deduplication)
+      if (prev.length > 0 && prev[0].input === input && prev[0].output === output) {
+        return prev;
+      }
       const entry: HistoryEntry = {
         id: Date.now().toString(),
         timestamp: Date.now(),

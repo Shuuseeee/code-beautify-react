@@ -193,8 +193,10 @@ export function useBeautifier() {
 
   const handleCompare = useCallback(() => {
     if (!input.trim() || !output.trim()) return;
+    const lang = mode !== "auto" ? mode : (detectedLang ?? "javascript");
+    addEntry(input, output, lang);
     setDiffOpen(true);
-  }, [input, output]);
+  }, [input, output, mode, detectedLang, addEntry]);
 
   const handleClearAll = useCallback(() => {
     setInput("");
