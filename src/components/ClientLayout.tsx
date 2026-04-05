@@ -30,8 +30,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       <OfflineBanner visible={!isOnline} />
       <OnboardingModal open={helpOpen} onClose={closeHelp} />
-      <Header theme={theme} onToggleTheme={toggleTheme} onHelp={() => setHelpOpen(true)} />
-      {children}
+      <div className="min-h-screen flex flex-col">
+        <Header theme={theme} onToggleTheme={toggleTheme} onHelp={() => setHelpOpen(true)} />
+        {children}
+      </div>
     </>
   );
 }
