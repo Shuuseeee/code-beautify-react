@@ -79,7 +79,7 @@ export default function ActionPanel({
       </div>
 
       {/* ── DESKTOP layout: vertical column ── */}
-      <div className="hidden md:flex flex-col gap-2 w-44 shrink-0 py-2 justify-center">
+      <div className="hidden md:flex flex-col gap-2 w-44 shrink-0 pt-6 justify-start">
         {/* Format Code */}
         <button
           onClick={onFormat}
@@ -105,7 +105,7 @@ export default function ActionPanel({
             <div
               onMouseEnter={() => setUncommentOpen(true)}
               onMouseLeave={() => setUncommentOpen(false)}
-              className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
+              className="absolute left-0 top-full mt-1 min-w-full w-max bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
             >
               <button
                 onClick={() => { onRemoveComments("html"); setUncommentOpen(false); }}
