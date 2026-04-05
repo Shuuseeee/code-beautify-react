@@ -27,7 +27,7 @@
   "onboardingSubtitle": "できることをご紹介します：",
   "onboardingFeatures": "機能一覧",
   "onboardingShortcuts": "キーボードショートカット",
-  "onboardingTip": "ヒント：テーマと言語の設定は自動的に保存されます。",
+  "onboardingTip": "テーマと言語の設定は自動的に保存されます。ServiceNow スクリプト（GlideRecord、gs、g_form…）は差分ビューで自動検出・ハイライトされます。",
   "onboardingGotIt": "了解！",
   "navBeautify": "コード整理",
   "navCompare": "テキスト比較",

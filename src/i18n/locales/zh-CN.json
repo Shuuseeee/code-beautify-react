@@ -27,7 +27,7 @@
   "onboardingSubtitle": "以下是您可以使用的功能：",
   "onboardingFeatures": "功能一览",
   "onboardingShortcuts": "键盘快捷键",
-  "onboardingTip": "提示：您的主题和语言偏好会自动保存。",
+  "onboardingTip": "主题和语言偏好会自动保存。ServiceNow 脚本（GlideRecord、gs、g_form…）可在对比视图中自动识别并高亮显示。",
   "onboardingGotIt": "知道了！",
   "navBeautify": "代码美化",
   "navCompare": "文本对比",

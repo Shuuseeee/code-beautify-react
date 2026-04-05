@@ -27,7 +27,7 @@
   "onboardingSubtitle": "Here's what you can do:",
   "onboardingFeatures": "Features",
   "onboardingShortcuts": "Keyboard Shortcuts",
-  "onboardingTip": "Tip: your theme and language preference are saved automatically.",
+  "onboardingTip": "Theme and language preferences are saved automatically. ServiceNow scripts (GlideRecord, gs, g_form…) are auto-detected and highlighted in the diff view.",
   "onboardingGotIt": "Got it!",
   "navBeautify": "Beautify",
   "navCompare": "Compare",

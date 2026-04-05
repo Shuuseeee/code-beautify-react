@@ -1,6 +1,6 @@
 "use client";
 
-import { Wand2, MessageSquareX, GitCompare, Globe, Moon } from "lucide-react";
+import { Wand2, MessageSquareX, GitCompare, Diff, Globe, Moon, Info } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 
 // Detect Mac at module level (client-only, safe in "use client")
@@ -9,11 +9,12 @@ const isMac =
 const MOD = isMac ? "⌘" : "Ctrl";
 
 const FEATURES = [
-  { icon: Wand2,          label: "Format Code",       desc: "HTML · CSS · JS · JSON" },
-  { icon: MessageSquareX, label: "Remove Comments",   desc: "HTML & JavaScript"      },
-  { icon: GitCompare,     label: "Compare Code",      desc: "Monaco diff view"       },
-  { icon: Globe,          label: "Multilingual",      desc: "中文 · 日本語 · English" },
-  { icon: Moon,           label: "Dark Mode",         desc: "Follows system pref"    },
+  { icon: Wand2,          label: "Format Code",     desc: "HTML · CSS · JS · JSON"          },
+  { icon: MessageSquareX, label: "Remove Comments", desc: "HTML & JavaScript"                },
+  { icon: GitCompare,     label: "Diff View",       desc: "Monaco · ServiceNow highlighting" },
+  { icon: Diff,           label: "String Compare",  desc: "Char-level side-by-side diff"     },
+  { icon: Globe,          label: "Multilingual",    desc: "中文 · 日本語 · English"           },
+  { icon: Moon,           label: "Dark Mode",       desc: "Follows system pref"              },
 ] as const;
 
 const SHORTCUTS = [
@@ -100,8 +101,9 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
 
             {/* Tip box */}
             <div className="mt-5 p-3 bg-[#007AFF]/8 dark:bg-[#007AFF]/12 rounded-xl">
-              <p className="text-xs text-anthro-dark dark:text-anthro-light leading-relaxed">
-                💡 {t("onboardingTip")}
+              <p className="flex items-start gap-1.5 text-xs text-anthro-dark dark:text-anthro-light leading-relaxed">
+                <Info size={12} className="shrink-0 mt-0.5 text-[#007AFF]" />
+                {t("onboardingTip")}
               </p>
             </div>
           </div>
