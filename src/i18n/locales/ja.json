@@ -28,5 +28,14 @@
   "onboardingFeatures": "機能一覧",
   "onboardingShortcuts": "キーボードショートカット",
   "onboardingTip": "ヒント：テーマと言語の設定は自動的に保存されます。",
-  "onboardingGotIt": "了解！"
+  "onboardingGotIt": "了解！",
+  "navBeautify": "コード整理",
+  "navCompare": "テキスト比較",
+  "compareLeft": "元のテキスト",
+  "compareRight": "変更後",
+  "comparePlaceholderLeft": "元のテキストをここに貼り付け…",
+  "comparePlaceholderRight": "変更後のテキストをここに貼り付け…",
+  "compareLines": "行",
+  "compareIdentical": "テキストは同一です",
+  "compareEmptyHint": "両方のパネルにテキストを入力して比較ボタンを押してください"
 }

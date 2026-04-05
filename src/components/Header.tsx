@@ -2,6 +2,8 @@
 
 import { Sun, Moon, ChevronDown, CircleHelp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
 
@@ -20,9 +22,10 @@ const LOCALES = [
 ];
 
 export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
-  const { locale, setLocale } = useI18n();
+  const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -39,11 +42,32 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-anthro-light/90 dark:bg-anthro-dark/90 backdrop-blur-md border-b border-anthro-border dark:border-anthro-dark-border">
       <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-2 select-none">
+        {/* Logo + Nav */}
+        <div className="flex items-center gap-5 select-none">
           <span className="font-semibold text-anthro-dark dark:text-anthro-light text-sm font-heading tracking-wide">
             Code Beautify
           </span>
+          <nav className="flex items-center gap-1">
+            {[
+              { href: "/",        label: t("navBeautify") },
+              { href: "/compare", label: t("navCompare")  },
+            ].map(({ href, label }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-heading transition-colors ${
+                    active
+                      ? "bg-[#007AFF]/10 text-[#007AFF] font-semibold"
+                      : "text-anthro-mid hover:text-anthro-dark dark:hover:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Controls */}

@@ -12,6 +12,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "@vercel/analytics": "^2.0.1",
+    "diff": "^8.0.4",
     "highlight.js": "^11.11.1",
     "js-beautify": "^1.15.4",
     "lucide-react": "^0.475.0",
@@ -20,6 +21,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@types/diff": "^7.0.2",
     "@types/js-beautify": "^1.14.3",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
