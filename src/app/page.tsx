@@ -118,20 +118,24 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col">
         <Header theme={theme} onToggleTheme={toggleTheme} />
 
-        <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full px-4 py-6 gap-4">
+        <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full px-3 md:px-4 py-4 md:py-6 gap-3 md:gap-4">
           <ModeSelector mode={mode} detectedLang={detectedLang} onChange={handleModeChange} />
 
-          <div className="flex-1 flex gap-4 min-h-0" style={{ minHeight: "60vh" }}>
-            <CodePanel
-              label={t("input")}
-              value={input}
-              onChange={handleInputChange}
-              onClear={() => {
-                setInput("");
-                setDetectedLang(null);
-              }}
-              placeholder={t("inputPlaceholder")}
-            />
+          {/* Mobile: column stack / Desktop: three-column row */}
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:flex-1 md:min-h-0">
+            {/* Input panel — fixed height on mobile, flex-1 on desktop */}
+            <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col">
+              <CodePanel
+                label={t("input")}
+                value={input}
+                onChange={handleInputChange}
+                onClear={() => {
+                  setInput("");
+                  setDetectedLang(null);
+                }}
+                placeholder={t("inputPlaceholder")}
+              />
+            </div>
 
             <ActionPanel
               onFormat={handleFormat}
@@ -140,13 +144,16 @@ export default function HomePage() {
               onRemoveComments={handleRemoveComments}
             />
 
-            <CodePanel
-              label={t("output")}
-              value={output}
-              onChange={setOutput}
-              onClear={() => setOutput("")}
-              placeholder={t("outputPlaceholder")}
-            />
+            {/* Output panel */}
+            <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col">
+              <CodePanel
+                label={t("output")}
+                value={output}
+                onChange={setOutput}
+                onClear={() => setOutput("")}
+                placeholder={t("outputPlaceholder")}
+              />
+            </div>
           </div>
         </div>
 
