@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import {
   Wand2, GitCompare, Eraser, ChevronDown, FileCode, FileCode2,
-  MessageSquareX, Loader2, Check, Link2, History, RotateCcw,
+  MessageSquareX, Loader2, Check, Link2, History, RotateCcw, X,
 } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 import { LANG_COLOR } from "@/lib/langColors";
@@ -68,6 +68,7 @@ interface ActionPanelProps {
   shareCopied?: boolean;
   history?: HistoryEntry[];
   onRestoreHistory?: (entry: HistoryEntry) => void;
+  onRemoveHistory?: (id: string) => void;
   onClearHistory?: () => void;
 }
 
@@ -82,6 +83,7 @@ export default function ActionPanel({
   shareCopied      = false,
   history          = [],
   onRestoreHistory,
+  onRemoveHistory,
   onClearHistory,
 }: ActionPanelProps) {
   const { t } = useI18n();
@@ -202,26 +204,35 @@ export default function ActionPanel({
             ) : (
               <>
                 {history.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    onClick={() => { onRestoreHistory?.(entry); setHistoryOpen(false); }}
-                    className="w-full flex items-start gap-2.5 px-3 py-2.5 hover:bg-anthro-light dark:hover:bg-anthro-dark/40 transition-colors text-left border-b border-anthro-border dark:border-anthro-dark-border last:border-0"
-                  >
-                    <RotateCcw size={12} className="shrink-0 mt-0.5 text-anthro-mid" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[10px] font-mono font-semibold uppercase"
-                          style={{ color: LANG_COLOR[entry.lang as keyof typeof LANG_COLOR]?.text ?? "#888" }}>
-                          {entry.lang}
-                        </span>
-                        <span className="text-[10px] text-anthro-mid/60">{relativeTime(entry.timestamp)}</span>
+                  <div key={entry.id} className="flex items-center border-b border-anthro-border dark:border-anthro-dark-border last:border-0 group">
+                    <button
+                      type="button"
+                      onClick={() => { onRestoreHistory?.(entry); setHistoryOpen(false); }}
+                      className="flex-1 flex items-start gap-2.5 px-3 py-2.5 hover:bg-anthro-light dark:hover:bg-anthro-dark/40 transition-colors text-left"
+                    >
+                      <RotateCcw size={12} className="shrink-0 mt-0.5 text-anthro-mid" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="text-[10px] font-mono font-semibold uppercase"
+                            style={{ color: LANG_COLOR[entry.lang as keyof typeof LANG_COLOR]?.text ?? "#888" }}>
+                            {entry.lang}
+                          </span>
+                          <span className="text-[10px] text-anthro-mid/60">{relativeTime(entry.timestamp)}</span>
+                        </div>
+                        <p className="text-xs font-mono text-anthro-dark dark:text-anthro-light truncate opacity-70">
+                          {entry.input.split("\n")[0].slice(0, 60)}
+                        </p>
                       </div>
-                      <p className="text-xs font-mono text-anthro-dark dark:text-anthro-light truncate opacity-70">
-                        {entry.input.split("\n")[0].slice(0, 60)}
-                      </p>
-                    </div>
-                  </button>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onRemoveHistory?.(entry.id)}
+                      className="opacity-0 group-hover:opacity-100 pr-3 pl-1 py-1 text-anthro-mid/50 hover:text-red-500 transition-all shrink-0"
+                      title="Remove"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
                 ))}
                 <button
                   type="button"
@@ -237,7 +248,7 @@ export default function ActionPanel({
       </div>
 
       {/* ── DESKTOP layout: vertical column ── */}
-      <div className="hidden md:flex flex-col gap-2 w-44 shrink-0 pt-6 justify-start">
+      <div className="hidden md:flex flex-col gap-2 w-52 shrink-0 pt-6 justify-start">
         {/* Format Code */}
         <button
           type="button"
@@ -368,28 +379,37 @@ export default function ActionPanel({
               ) : (
                 <>
                   {history.map((entry) => (
-                    <button
-                      key={entry.id}
-                      type="button"
-                      onClick={() => { onRestoreHistory?.(entry); setHistoryOpen(false); }}
-                      className="w-full flex items-start gap-2.5 px-3 py-2.5 hover:bg-anthro-light dark:hover:bg-anthro-dark/40 transition-colors text-left border-b border-anthro-border dark:border-anthro-dark-border last:border-0"
-                    >
-                      <RotateCcw size={12} className="shrink-0 mt-0.5 text-anthro-mid" />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span
-                            className="text-[10px] font-mono font-semibold uppercase"
-                            style={{ color: LANG_COLOR[entry.lang as keyof typeof LANG_COLOR]?.text ?? "#888" }}
-                          >
-                            {entry.lang}
-                          </span>
-                          <span className="text-[10px] text-anthro-mid/60">{relativeTime(entry.timestamp)}</span>
+                    <div key={entry.id} className="flex items-center border-b border-anthro-border dark:border-anthro-dark-border last:border-0 group">
+                      <button
+                        type="button"
+                        onClick={() => { onRestoreHistory?.(entry); setHistoryOpen(false); }}
+                        className="flex-1 flex items-start gap-2.5 px-3 py-2.5 hover:bg-anthro-light dark:hover:bg-anthro-dark/40 transition-colors text-left"
+                      >
+                        <RotateCcw size={12} className="shrink-0 mt-0.5 text-anthro-mid" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span
+                              className="text-[10px] font-mono font-semibold uppercase"
+                              style={{ color: LANG_COLOR[entry.lang as keyof typeof LANG_COLOR]?.text ?? "#888" }}
+                            >
+                              {entry.lang}
+                            </span>
+                            <span className="text-[10px] text-anthro-mid/60">{relativeTime(entry.timestamp)}</span>
+                          </div>
+                          <p className="text-xs font-mono text-anthro-dark dark:text-anthro-light truncate opacity-70">
+                            {entry.input.split("\n")[0].slice(0, 55)}
+                          </p>
                         </div>
-                        <p className="text-xs font-mono text-anthro-dark dark:text-anthro-light truncate opacity-70">
-                          {entry.input.split("\n")[0].slice(0, 55)}
-                        </p>
-                      </div>
-                    </button>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRemoveHistory?.(entry.id)}
+                        className="opacity-0 group-hover:opacity-100 pr-3 pl-1 py-1 text-anthro-mid/50 hover:text-red-500 transition-all shrink-0"
+                        title="Remove"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
                   ))}
                   <button
                     type="button"

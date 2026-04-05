@@ -19,7 +19,7 @@ export default function HomePage() {
     handleInputChange, clearInput,
     handleModeChange, handleFormat,
     handleRemoveComments, handleCompare, handleClearAll,
-    handleShare, handleRestoreHistory, clearHistory,
+    handleShare, handleRestoreHistory, removeHistoryEntry, clearHistory,
     setOutput, setDiffOpen, closeError,
   } = useBeautifier();
 
@@ -57,6 +57,7 @@ export default function HomePage() {
             shareCopied={shareCopied}
             history={history}
             onRestoreHistory={handleRestoreHistory}
+            onRemoveHistory={removeHistoryEntry}
             onClearHistory={clearHistory}
           />
 

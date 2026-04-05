@@ -28,7 +28,7 @@ function decodeShare(encoded: string): string {
 
 export function useBeautifier() {
   const { t } = useI18n();
-  const { history, addEntry, clearHistory } = useHistory();
+  const { history, addEntry, removeEntry, clearHistory } = useHistory();
 
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
@@ -281,6 +281,7 @@ export function useBeautifier() {
     handleClearAll,
     handleShare,
     handleRestoreHistory,
+    removeHistoryEntry: removeEntry,
     clearHistory,
     setOutput,
     setDiffOpen,

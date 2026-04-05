@@ -49,6 +49,22 @@ export function useHistory() {
     });
   }, []);
 
+  const removeEntry = useCallback((id: string) => {
+    setHistory((prev) => {
+      const next = prev.filter((e) => e.id !== id);
+      try {
+        if (next.length > 0) {
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+        } else {
+          localStorage.removeItem(HISTORY_KEY);
+        }
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+
   const clearHistory = useCallback(() => {
     try {
       localStorage.removeItem(HISTORY_KEY);
@@ -58,5 +74,5 @@ export function useHistory() {
     setHistory([]);
   }, []);
 
-  return { history, addEntry, clearHistory };
+  return { history, addEntry, removeEntry, clearHistory };
 }
