@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-anthro-light dark:bg-anthro-dark text-anthro-dark dark:text-anthro-light;
+    font-family: "Poppins", Arial, sans-serif;
+  }
+
+  textarea {
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  }
+}
+
+/* ── iOS 26 Liquid Glass variables ── */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.52);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 6px 36px rgba(0, 0, 0, 0.07),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  --glass-pill-bg: rgba(255, 255, 255, 0.88);
+  --glass-pill-shadow: 0 2px 10px rgba(0, 0, 0, 0.1),
+    0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  --glass-text-active: #141413;
+  --glass-text-inactive: rgba(20, 20, 19, 0.42);
+  --glass-hover-bg: rgba(255, 255, 255, 0.35);
+}
+
+.dark {
+  --glass-bg: rgba(22, 21, 19, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-shadow: 0 6px 36px rgba(0, 0, 0, 0.35),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  --glass-pill-bg: rgba(255, 255, 255, 0.11);
+  --glass-pill-shadow: 0 2px 10px rgba(0, 0, 0, 0.35),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --glass-text-active: #faf9f5;
+  --glass-text-inactive: rgba(250, 249, 245, 0.38);
+  --glass-hover-bg: rgba(255, 255, 255, 0.07);
+}
+
+@layer utilities {
+  .shake {
+    animation: shake 0.4s ease;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
