@@ -37,6 +37,8 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const navLinkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [navPill, setNavPill] = useState<{ left: number; width: number } | null>(null);
   const navPillInitialized = useRef(false);
+  const [navHovering, setNavHovering] = useState<number | null>(null);
+  const [navPressing, setNavPressing] = useState<number | null>(null);
 
   const activeNavIndex = NAV_LINKS.findIndex(({ href }) => pathname === href);
 
@@ -100,6 +102,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
                   "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.7) 70%, transparent 100%)",
               }}
             />
+            {/* Active pill */}
             {navPill && (
               <div
                 className="absolute top-1 bottom-1 rounded-xl z-[1]"
@@ -114,20 +117,37 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
                 }}
               />
             )}
+            {/* Hover ghost pill */}
+            {navHovering !== null && navHovering !== activeNavIndex && (() => {
+              const el = navLinkRefs.current[navHovering];
+              if (!el) return null;
+              return (
+                <div
+                  className="absolute top-1 bottom-1 rounded-xl pointer-events-none z-[1]"
+                  style={{ left: el.offsetLeft, width: el.offsetWidth, background: "var(--glass-hover-bg)" }}
+                />
+              );
+            })()}
             {NAV_LINKS.map(({ href, labelKey }, i) => {
               const active = pathname === href;
               return (
                 <Link
                   key={href}
-                  ref={(el) => {
-                    navLinkRefs.current[i] = el;
-                  }}
+                  ref={(el) => { navLinkRefs.current[i] = el; }}
                   href={href}
-                  className={`relative z-10 px-3 py-1.5 rounded-xl text-sm font-heading transition-colors ${
-                    active
-                      ? "font-semibold text-[#007AFF] dark:text-[#409CFF]"
-                      : "text-[color:var(--glass-text-inactive)] hover:text-anthro-dark dark:hover:text-anthro-light hover:bg-[var(--glass-hover-bg)]"
-                  }`}
+                  onMouseEnter={() => setNavHovering(i)}
+                  onMouseLeave={() => setNavHovering(null)}
+                  onMouseDown={() => setNavPressing(i)}
+                  onMouseUp={() => setNavPressing(null)}
+                  onTouchStart={() => setNavPressing(i)}
+                  onTouchEnd={() => setNavPressing(null)}
+                  className="relative z-10 px-3 py-1.5 rounded-xl text-sm font-heading"
+                  style={{
+                    color: active ? NAV_BLUE.text : "var(--glass-text-inactive)",
+                    fontWeight: active ? 600 : 400,
+                    transform: navPressing === i ? "scale(0.93)" : "scale(1)",
+                    transition: "color 200ms ease, transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
                 >
                   {t(labelKey)}
                 </Link>

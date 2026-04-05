@@ -5,30 +5,32 @@ import { diffLines, diffChars, type Change } from "diff";
 import { GitCompare, Eraser } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 
-// ── Row in the side-by-side table ──────────────────────────────────────────
+// ── Types ───────────────────────────────────────────────────────────────────
+
 interface Row {
-  left:  { text: string; chars?: Change[] } | null;
-  right: { text: string; chars?: Change[] } | null;
+  left:  CellData | null;
+  right: CellData | null;
   type:  "equal" | "changed" | "removed" | "added";
-  lineL?: number;
-  lineR?: number;
 }
 
-// ── Build aligned side-by-side rows ────────────────────────────────────────
+interface CellData {
+  text:  string;
+  chars?: Change[]; // only for "changed" rows
+}
+
+// ── Diff builder ─────────────────────────────────────────────────────────────
+
 function buildRows(leftText: string, rightText: string): Row[] {
   const changes = diffLines(leftText, rightText);
   const rows: Row[] = [];
-  let lineL = 1, lineR = 1;
-
   let i = 0;
+
   while (i < changes.length) {
     const c = changes[i];
 
     if (!c.added && !c.removed) {
-      const lines = splitLines(c.value);
-      for (const line of lines) {
-        rows.push({ left: { text: line }, right: { text: line }, type: "equal", lineL: lineL++, lineR: lineR++ });
-      }
+      for (const line of splitLines(c.value))
+        rows.push({ left: { text: line }, right: { text: line }, type: "equal" });
       i++;
       continue;
     }
@@ -36,44 +38,40 @@ function buildRows(leftText: string, rightText: string): Row[] {
     if (c.removed) {
       const next = changes[i + 1];
       if (next?.added) {
-        // Pair removed + added → character-level diff per aligned row
+        // Pair them — char-level diff per aligned row
         const removedLines = splitLines(c.value);
         const addedLines   = splitLines(next.value);
-        const maxLen = Math.max(removedLines.length, addedLines.length);
-        for (let j = 0; j < maxLen; j++) {
-          const lText = removedLines[j];
-          const rText = addedLines[j];
-          if (lText !== undefined && rText !== undefined) {
-            const chars = diffChars(lText, rText);
-            rows.push({ left: { text: lText, chars }, right: { text: rText, chars }, type: "changed", lineL: lineL++, lineR: lineR++ });
-          } else if (lText !== undefined) {
-            rows.push({ left: { text: lText }, right: null, type: "removed", lineL: lineL++ });
+        const len = Math.max(removedLines.length, addedLines.length);
+        for (let j = 0; j < len; j++) {
+          const l = removedLines[j];
+          const r = addedLines[j];
+          if (l !== undefined && r !== undefined) {
+            const chars = diffChars(l, r);
+            rows.push({ left: { text: l, chars }, right: { text: r, chars }, type: "changed" });
+          } else if (l !== undefined) {
+            rows.push({ left: { text: l }, right: null, type: "removed" });
           } else {
-            rows.push({ left: null, right: { text: rText }, type: "added", lineR: lineR++ });
+            rows.push({ left: null, right: { text: r }, type: "added" });
           }
         }
         i += 2;
         continue;
       }
-      // Standalone removed block
-      for (const line of splitLines(c.value)) {
-        rows.push({ left: { text: line }, right: null, type: "removed", lineL: lineL++ });
-      }
+      for (const line of splitLines(c.value))
+        rows.push({ left: { text: line }, right: null, type: "removed" });
       i++;
       continue;
     }
 
     if (c.added) {
-      for (const line of splitLines(c.value)) {
-        rows.push({ left: null, right: { text: line }, type: "added", lineR: lineR++ });
-      }
+      for (const line of splitLines(c.value))
+        rows.push({ left: null, right: { text: line }, type: "added" });
       i++;
       continue;
     }
 
     i++;
   }
-
   return rows;
 }
 
@@ -81,34 +79,58 @@ function splitLines(s: string): string[] {
   return s.replace(/\n$/, "").split("\n");
 }
 
-// ── Render one cell's content with intra-line char highlights ───────────────
-function CellContent({ text, chars, side }: { text: string; chars?: Change[]; side: "left" | "right" }) {
-  if (!chars) return <>{text || "\u00a0"}</>;
-  return (
-    <>
-      {chars.map((c, i) => {
-        if (!c.added && !c.removed) return <span key={i}>{c.value}</span>;
-        if (c.removed && side === "left") {
-          return (
-            <mark key={i} className="rounded-sm bg-red-300/80 dark:bg-red-600/60 text-red-900 dark:text-red-100">
-              {c.value.replace(/ /g, "\u00b7")}
-            </mark>
-          );
-        }
-        if (c.added && side === "right") {
-          return (
-            <mark key={i} className="rounded-sm bg-green-300/80 dark:bg-green-600/60 text-green-900 dark:text-green-100">
-              {c.value.replace(/ /g, "\u00b7")}
-            </mark>
-          );
-        }
-        return null; // skip the other side
-      })}
-    </>
-  );
+// ── Cell rendering ────────────────────────────────────────────────────────────
+// Mirrors difff.jp: only the changed spans get <em>-style highlights,
+// rows themselves have no background.
+//
+// Colors (light):  deletion #FFDDEE + border #FF8090 / addition #DDFFDD
+// Colors (dark):   deletion rgba(220,80,80,.28) / addition rgba(80,200,80,.22)
+
+const delCls =
+  "bg-[#FFDDEE] dark:bg-red-900/30 border border-[#FF8090] dark:border-red-500/40 font-bold";
+const addCls =
+  "bg-[#DDFFDD] dark:bg-green-900/30 font-bold";
+
+function CellContent({
+  cell,
+  side,
+  rowType,
+}: {
+  cell: CellData;
+  side: "left" | "right";
+  rowType: Row["type"];
+}) {
+  const { text, chars } = cell;
+
+  // Pure removal / addition — wrap entire text
+  if (rowType === "removed" && side === "left") {
+    return <mark className={delCls}>{text.replace(/ /g, "\u00b7") || "\u00a0"}</mark>;
+  }
+  if (rowType === "added" && side === "right") {
+    return <mark className={addCls}>{text.replace(/ /g, "\u00b7") || "\u00a0"}</mark>;
+  }
+
+  // Changed pair — char-level marks
+  if (chars) {
+    return (
+      <>
+        {chars.map((c, i) => {
+          if (!c.added && !c.removed) return <span key={i}>{c.value}</span>;
+          if (c.removed && side === "left")
+            return <mark key={i} className={delCls}>{c.value.replace(/ /g, "\u00b7")}</mark>;
+          if (c.added && side === "right")
+            return <mark key={i} className={addCls}>{c.value.replace(/ /g, "\u00b7")}</mark>;
+          return null;
+        })}
+      </>
+    );
+  }
+
+  return <>{text || "\u00a0"}</>;
 }
 
-// ── Main component ──────────────────────────────────────────────────────────
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function StringCompare() {
   const { t } = useI18n();
   const [left, setLeft]   = useState("");
@@ -129,12 +151,12 @@ export default function StringCompare() {
   return (
     <div className="flex-1 flex flex-col gap-3 md:gap-4 min-h-0">
 
-      {/* ── Two input textareas ── */}
+      {/* Input textareas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 h-[35vh] md:h-[38vh]">
         {[
-          { label: t("compareLeft"),  value: left,  onChange: setLeft,  placeholder: t("comparePlaceholderLeft")  },
-          { label: t("compareRight"), value: right, onChange: setRight, placeholder: t("comparePlaceholderRight") },
-        ].map(({ label, value, onChange, placeholder }) => (
+          { label: t("compareLeft"),  value: left,  set: setLeft,  ph: t("comparePlaceholderLeft")  },
+          { label: t("compareRight"), value: right, set: setRight, ph: t("comparePlaceholderRight") },
+        ].map(({ label, value, set, ph }) => (
           <div key={label} className="flex flex-col bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-anthro-border dark:border-anthro-dark-border select-none">
               <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">{label}</span>
@@ -146,8 +168,8 @@ export default function StringCompare() {
             </div>
             <textarea
               value={value}
-              onChange={(e) => { onChange(e.target.value); setRows(null); }}
-              placeholder={placeholder}
+              onChange={(e) => { set(e.target.value); setRows(null); }}
+              placeholder={ph}
               spellCheck={false}
               autoCapitalize="off"
               autoCorrect="off"
@@ -157,7 +179,7 @@ export default function StringCompare() {
         ))}
       </div>
 
-      {/* ── Action bar ── */}
+      {/* Action bar */}
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={handleCompare}
@@ -173,7 +195,6 @@ export default function StringCompare() {
           <Eraser size={15} />
           <span>{t("clearAll")}</span>
         </button>
-
         {rows && (
           <div className="flex items-center gap-3 ml-1 text-xs font-mono">
             {removedCount > 0 && <span className="text-red-500">−{removedCount} {t("compareLines")}</span>}
@@ -183,50 +204,59 @@ export default function StringCompare() {
         )}
       </div>
 
-      {/* ── Side-by-side diff table ── */}
+      {/* Diff result — difff.jp style */}
       {rows ? (
         <div className="flex-1 min-h-0 overflow-auto bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl">
-          <table className="w-full text-xs font-mono border-collapse min-w-[600px]">
+          <table className="w-full text-xs font-mono border-collapse min-w-[500px]" style={{ tableLayout: "fixed" }}>
             <colgroup>
-              <col className="w-10" />{/* line no L */}
-              <col className="w-[calc(50%-2.5rem)]" />
-              <col className="w-10" />{/* line no R */}
-              <col className="w-[calc(50%-2.5rem)]" />
+              <col style={{ width: "50%" }} />
+              <col style={{ width: "50%" }} />
             </colgroup>
+            {/* Column headers */}
+            <thead>
+              <tr className="border-b border-anthro-border dark:border-anthro-dark-border bg-anthro-light/60 dark:bg-anthro-dark/40 select-none">
+                <th className="text-left px-4 py-1.5 text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid border-r border-anthro-border dark:border-anthro-dark-border">
+                  {t("compareLeft")}
+                </th>
+                <th className="text-left px-4 py-1.5 text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">
+                  {t("compareRight")}
+                </th>
+              </tr>
+            </thead>
             <tbody>
-              {rows.map((row, i) => {
-                const isRemoved = row.type === "removed";
-                const isAdded   = row.type === "added";
-                const isChanged = row.type === "changed";
-                const leftBg  = (isRemoved || isChanged) ? "bg-red-50 dark:bg-red-950/25"   : "";
-                const rightBg = (isAdded   || isChanged) ? "bg-green-50 dark:bg-green-950/25" : "";
-                return (
-                  <tr key={i} className="border-b border-anthro-border/40 dark:border-anthro-dark-border/40 last:border-0">
-                    {/* Left line number */}
-                    <td className={`select-none text-right pr-3 pl-2 py-0.5 text-[10px] text-anthro-mid/40 border-r border-anthro-border dark:border-anthro-dark-border ${leftBg}`}>
-                      {row.lineL ?? ""}
-                    </td>
-                    {/* Left content */}
-                    <td className={`px-3 py-0.5 leading-5 whitespace-pre-wrap break-all border-r-2 border-anthro-border dark:border-anthro-dark-border ${leftBg} ${isRemoved || isChanged ? "text-red-900 dark:text-red-200" : "text-anthro-dark dark:text-anthro-light"}`}>
-                      {row.left
-                        ? <CellContent text={row.left.text} chars={row.left.chars} side="left" />
-                        : <span className="text-anthro-mid/20">·</span>
-                      }
-                    </td>
-                    {/* Right line number */}
-                    <td className={`select-none text-right pr-3 pl-2 py-0.5 text-[10px] text-anthro-mid/40 border-r border-anthro-border dark:border-anthro-dark-border ${rightBg}`}>
-                      {row.lineR ?? ""}
-                    </td>
-                    {/* Right content */}
-                    <td className={`px-3 py-0.5 leading-5 whitespace-pre-wrap break-all ${rightBg} ${isAdded || isChanged ? "text-green-900 dark:text-green-200" : "text-anthro-dark dark:text-anthro-light"}`}>
-                      {row.right
-                        ? <CellContent text={row.right.text} chars={row.right.chars} side="right" />
-                        : <span className="text-anthro-mid/20">·</span>
-                      }
-                    </td>
-                  </tr>
-                );
-              })}
+              {rows.map((row, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-anthro-border/30 dark:border-anthro-dark-border/30 last:border-0"
+                >
+                  {/* Left cell */}
+                  <td className={`px-4 py-0.5 leading-5 whitespace-pre-wrap break-all align-top border-r border-anthro-border dark:border-anthro-dark-border ${
+                    row.type === "equal" || row.type === "changed"
+                      ? "text-anthro-dark dark:text-anthro-light"
+                      : row.type === "removed"
+                      ? "text-anthro-dark dark:text-anthro-light"
+                      : "text-anthro-mid/30"
+                  }`}>
+                    {row.left
+                      ? <CellContent cell={row.left} side="left" rowType={row.type} />
+                      : <span className="text-anthro-mid/20 select-none">·</span>
+                    }
+                  </td>
+                  {/* Right cell */}
+                  <td className={`px-4 py-0.5 leading-5 whitespace-pre-wrap break-all align-top ${
+                    row.type === "equal" || row.type === "changed"
+                      ? "text-anthro-dark dark:text-anthro-light"
+                      : row.type === "added"
+                      ? "text-anthro-dark dark:text-anthro-light"
+                      : "text-anthro-mid/30"
+                  }`}>
+                    {row.right
+                      ? <CellContent cell={row.right} side="right" rowType={row.type} />
+                      : <span className="text-anthro-mid/20 select-none">·</span>
+                    }
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
