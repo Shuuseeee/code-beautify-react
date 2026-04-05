@@ -90,7 +90,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
                       }}
                       className={`w-full text-left px-3 py-2 text-sm font-heading transition-colors ${
                         locale === l.code
-                          ? "bg-anthro-orange-subtle text-anthro-orange dark:bg-anthro-orange/10 dark:text-anthro-orange"
+                          ? "bg-[#007AFF]/10 text-[#007AFF]"
                           : "text-anthro-dark dark:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border"
                       }`}
                     >
