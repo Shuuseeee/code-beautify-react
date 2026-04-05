@@ -8,15 +8,32 @@ import DiffModal from "@/components/DiffModal";
 import ErrorModal from "@/components/ErrorModal";
 import OfflineBanner from "@/components/OfflineBanner";
 import OnboardingModal from "@/components/OnboardingModal";
+import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 
+const ONBOARDING_KEY = "cb_onboarded_v1";
+
 export default function HomePage() {
   const { theme, toggleTheme } = useTheme();
   const isOnline = useOnlineStatus();
   const { t } = useI18n();
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  // Show on first visit (after page settles)
+  useEffect(() => {
+    if (!localStorage.getItem(ONBOARDING_KEY)) {
+      const id = setTimeout(() => setHelpOpen(true), 400);
+      return () => clearTimeout(id);
+    }
+  }, []);
+
+  function closeHelp() {
+    localStorage.setItem(ONBOARDING_KEY, "1");
+    setHelpOpen(false);
+  }
 
   const {
     input, output, mode, detectedLang, isFormatting,
@@ -30,10 +47,10 @@ export default function HomePage() {
   return (
     <>
       <OfflineBanner visible={!isOnline} />
-      <OnboardingModal />
+      <OnboardingModal open={helpOpen} onClose={closeHelp} />
 
       <div className="min-h-screen flex flex-col">
-        <Header theme={theme} onToggleTheme={toggleTheme} />
+        <Header theme={theme} onToggleTheme={toggleTheme} onHelp={() => setHelpOpen(true)} />
 
         <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full px-3 md:px-4 py-4 md:py-6 gap-3 md:gap-4">
           <ModeSelector

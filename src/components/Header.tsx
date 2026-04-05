@@ -1,6 +1,6 @@
 "use client";
 
-import { Sun, Moon, ChevronDown } from "lucide-react";
+import { Sun, Moon, ChevronDown, CircleHelp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
@@ -10,6 +10,7 @@ export type { Theme };
 interface HeaderProps {
   theme: Theme;
   onToggleTheme: () => void;
+  onHelp: () => void;
 }
 
 const LOCALES = [
@@ -18,7 +19,7 @@ const LOCALES = [
   { code: "en" as const, label: "English" },
 ];
 
-export default function Header({ theme, onToggleTheme }: HeaderProps) {
+export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const { locale, setLocale } = useI18n();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,6 +48,15 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
 
         {/* Controls */}
         <div className="flex items-center gap-1">
+          {/* Help */}
+          <button
+            onClick={onHelp}
+            className="p-2 rounded-lg text-anthro-mid hover:text-anthro-dark hover:bg-anthro-border dark:hover:text-anthro-light dark:hover:bg-anthro-dark-border transition-colors"
+            aria-label="Help"
+          >
+            <CircleHelp size={17} />
+          </button>
+
           {/* Theme toggle */}
           <button
             onClick={onToggleTheme}

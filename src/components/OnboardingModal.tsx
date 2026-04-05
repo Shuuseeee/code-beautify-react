@@ -1,10 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Wand2, MessageSquareX, GitCompare, Globe, Moon } from "lucide-react";
 import { useI18n } from "@/i18n/context";
-
-const STORAGE_KEY = "cb_onboarded_v1";
 
 // Detect Mac at module level (client-only, safe in "use client")
 const isMac =
@@ -25,29 +22,20 @@ const SHORTCUTS = [
   { keys: [MOD, "⇧", "K"],  desc: "clearAll"    },
 ] as const;
 
-export default function OnboardingModal() {
+interface OnboardingModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   const { t } = useI18n();
-  const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      // Small delay so the page settles first
-      const id = setTimeout(() => setVisible(true), 400);
-      return () => clearTimeout(id);
-    }
-  }, []);
-
-  function dismiss() {
-    localStorage.setItem(STORAGE_KEY, "1");
-    setVisible(false);
-  }
-
-  if (!visible) return null;
+  if (!open) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-anthro-dark/40 backdrop-blur-sm"
-      onClick={dismiss}
+      onClick={onClose}
     >
       <div
         className="modal-in bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
@@ -122,7 +110,7 @@ export default function OnboardingModal() {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-anthro-border dark:border-anthro-dark-border flex justify-end">
           <button
-            onClick={dismiss}
+            onClick={onClose}
             className="px-6 py-2.5 bg-[#007AFF] hover:bg-[#0066CC] text-white text-sm font-semibold font-heading rounded-xl transition-colors"
           >
             {t("onboardingGotIt")}
