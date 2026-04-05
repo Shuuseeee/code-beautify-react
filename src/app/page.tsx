@@ -14,11 +14,12 @@ export default function HomePage() {
   const { t } = useI18n();
 
   const {
-    input, output, mode, detectedLang, isFormatting, shakeInput,
-    diffOpen, error,
+    input, output, mode, detectedLang, isFormatting, formatSuccess,
+    shakeInput, diffOpen, error, errorLine, shareCopied, history,
     handleInputChange, clearInput,
     handleModeChange, handleFormat,
     handleRemoveComments, handleCompare, handleClearAll,
+    handleShare, handleRestoreHistory, clearHistory,
     setOutput, setDiffOpen, closeError,
   } = useBeautifier();
 
@@ -41,6 +42,7 @@ export default function HomePage() {
               onClear={clearInput}
               placeholder={t("inputPlaceholder")}
               className={shakeInput ? "shake" : ""}
+              errorLine={errorLine}
             />
           </div>
 
@@ -49,7 +51,13 @@ export default function HomePage() {
             onCompare={handleCompare}
             onClearAll={handleClearAll}
             onRemoveComments={handleRemoveComments}
+            onShare={handleShare}
             isFormatting={isFormatting}
+            formatSuccess={formatSuccess}
+            shareCopied={shareCopied}
+            history={history}
+            onRestoreHistory={handleRestoreHistory}
+            onClearHistory={clearHistory}
           />
 
           <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col">

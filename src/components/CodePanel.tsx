@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Copy, Check, Trash2 } from "lucide-react";
+import { Copy, Check, Trash2, TriangleAlert } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 
 interface CodePanelProps {
@@ -13,6 +13,7 @@ interface CodePanelProps {
   placeholder?: string;
   scrollTopOnChange?: boolean;
   className?: string;
+  errorLine?: number | null;
 }
 
 export default function CodePanel({
@@ -24,6 +25,7 @@ export default function CodePanel({
   placeholder,
   scrollTopOnChange = false,
   className = "",
+  errorLine = null,
 }: CodePanelProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
@@ -43,7 +45,23 @@ export default function CodePanel({
     setTimeout(() => setCopied(false), 1500);
   }, [value]);
 
-  // Stats for header
+  // Jump to error line: select the line and scroll it into view
+  const handleErrorBadgeClick = useCallback(() => {
+    if (!errorLine || !textareaRef.current) return;
+    const ta = textareaRef.current;
+    const lines = ta.value.split("\n");
+    const targetLine = Math.min(errorLine, lines.length) - 1;
+    let pos = 0;
+    for (let i = 0; i < targetLine; i++) {
+      pos += lines[i].length + 1;
+    }
+    const lineEnd = pos + (lines[targetLine]?.length ?? 0);
+    ta.focus();
+    ta.setSelectionRange(pos, lineEnd);
+    // Approximate scroll: ~20px per line
+    ta.scrollTop = Math.max(0, targetLine * 20 - 60);
+  }, [errorLine]);
+
   const lineCount = value ? value.split("\n").length : 0;
   const charCount = value.length;
 
@@ -59,6 +77,16 @@ export default function CodePanel({
             <span className="text-[10px] font-mono text-anthro-mid/50">
               {lineCount}L · {charCount}C
             </span>
+          )}
+          {errorLine && (
+            <button
+              onClick={handleErrorBadgeClick}
+              title="Click to jump to error line"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-red-50 dark:bg-red-500/15 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/25 transition-colors"
+            >
+              <TriangleAlert size={10} />
+              L{errorLine}
+            </button>
           )}
         </div>
         <div className="flex items-center gap-0.5">

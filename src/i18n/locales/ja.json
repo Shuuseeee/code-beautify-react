@@ -37,5 +37,10 @@
   "comparePlaceholderRight": "変更後のテキストをここに貼り付け…",
   "compareLines": "行",
   "compareIdentical": "テキストは同一です",
-  "compareEmptyHint": "両方のパネルにテキストを入力して比較ボタンを押してください"
+  "compareEmptyHint": "両方のパネルにテキストを入力して比較ボタンを押してください",
+  "history": "履歴",
+  "historyEmpty": "履歴はありません",
+  "clearHistory": "履歴をクリア",
+  "shareCode": "共有",
+  "shareLinkCopied": "リンクをコピー済み"
 }

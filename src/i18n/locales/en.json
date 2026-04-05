@@ -37,5 +37,10 @@
   "comparePlaceholderRight": "Paste modified text here…",
   "compareLines": "lines",
   "compareIdentical": "Texts are identical",
-  "compareEmptyHint": "Paste text into both panels and click Compare"
+  "compareEmptyHint": "Paste text into both panels and click Compare",
+  "history": "History",
+  "historyEmpty": "No history yet",
+  "clearHistory": "Clear History",
+  "shareCode": "Share",
+  "shareLinkCopied": "Link Copied!"
 }
