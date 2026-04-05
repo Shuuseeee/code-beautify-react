@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 import dynamic from "next/dynamic";
 import type { Theme } from "@/hooks/useTheme";
+import { registerServiceNowLanguage, isServiceNowCode } from "@/lib/monacoServiceNow";
 
 const MonacoDiffEditor = dynamic(
   () => import("@monaco-editor/react").then((m) => m.DiffEditor),
@@ -47,11 +48,16 @@ export default function DiffModal({
 
   if (!open) return null;
 
-  const monacoLang =
-    language === "html" ? "html"
-    : language === "css" ? "css"
+  const isSnow = isServiceNowCode(original) || isServiceNowCode(modified);
+  const monacoLang = isSnow
+    ? "servicenow"
+    : language === "html" ? "html"
+    : language === "css"  ? "css"
     : language === "json" ? "json"
     : "javascript";
+  const monacoTheme = isSnow
+    ? (theme === "dark" ? "servicenow-dark" : "servicenow-light")
+    : (theme === "dark" ? "vs-dark" : "vs");
 
   return (
     <div
@@ -82,7 +88,8 @@ export default function DiffModal({
             original={original}
             modified={modified}
             language={monacoLang}
-            theme={theme === "dark" ? "vs-dark" : "vs"}
+            theme={monacoTheme}
+            beforeMount={(monaco) => registerServiceNowLanguage(monaco)}
             options={{ readOnly: true, automaticLayout: true, fontSize: 13 }}
             height="100%"
           />
