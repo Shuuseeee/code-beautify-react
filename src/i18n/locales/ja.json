@@ -22,6 +22,7 @@
   "removeHtmlComments": "HTML コメントを削除",
   "removeJsComments": "JS コメントを削除",
   "formatting": "整理中…",
+  "langNotDetectedError": "言語を検出できません。上のタブから言語を手動で選択してください。",
   "onboardingTitle": "Code Beautify へようこそ",
   "onboardingSubtitle": "できることをご紹介します：",
   "onboardingFeatures": "機能一覧",

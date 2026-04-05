@@ -22,6 +22,7 @@
   "removeHtmlComments": "Remove HTML Comments",
   "removeJsComments": "Remove JS Comments",
   "formatting": "Formatting…",
+  "langNotDetectedError": "Language not detected. Please select a language from the tabs above.",
   "onboardingTitle": "Welcome to Code Beautify",
   "onboardingSubtitle": "Here's what you can do:",
   "onboardingFeatures": "Features",

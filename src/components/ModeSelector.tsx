@@ -17,6 +17,7 @@ const MODES: { value: Mode; label: string }[] = [
   { value: "html",       label: "HTML" },
   { value: "css",        label: "CSS"  },
   { value: "javascript", label: "JS"   },
+  { value: "typescript", label: "TS"   },
   { value: "json",       label: "JSON" },
 ];
 
@@ -25,6 +26,7 @@ const LANG_COLOR: Record<string, { tint: string; text: string; textDark: string 
   html:       { tint: "rgba(255, 59,  48,  0.13)", text: "#E0352B",  textDark: "#FF6B63" },
   css:        { tint: "rgba(255, 204, 0,   0.15)", text: "#997A00",  textDark: "#FFD426" },
   javascript: { tint: "rgba(52,  199, 89,  0.13)", text: "#25A244",  textDark: "#3DD869" },
+  typescript: { tint: "rgba(49,  120, 198, 0.13)", text: "#1D6DB5",  textDark: "#5DA8FF" },
   json:       { tint: "rgba(0,   122, 255, 0.13)", text: "#007AFF",  textDark: "#409CFF" },
 };
 

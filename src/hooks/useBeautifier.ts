@@ -19,20 +19,34 @@ export function useBeautifier() {
   const [mode, setMode] = useState<Mode>("auto");
   const [detectedLang, setDetectedLang] = useState<DetectedLang | null>(null);
   const [isFormatting, setIsFormatting] = useState(false);
+  const [shakeInput, setShakeInput] = useState(false);
   const [diffOpen, setDiffOpen] = useState(false);
   const [error, setError] = useState<{ open: boolean; message: string }>({
     open: false,
     message: "",
   });
 
-  const showError = useCallback((msg: string) => setError({ open: true, message: msg }), []);
+  const detectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerShake = useCallback(() => {
+    setShakeInput(true);
+    setTimeout(() => setShakeInput(false), 500);
+  }, []);
+
+  const showError = useCallback((msg: string) => {
+    setError({ open: true, message: msg });
+    triggerShake();
+  }, [triggerShake]);
 
   const handleInputChange = useCallback(
-    async (value: string) => {
+    (value: string) => {
       setInput(value);
+      if (detectTimer.current) clearTimeout(detectTimer.current);
       if (mode === "auto" && value.trim()) {
-        const lang = await detectLanguage(value);
-        setDetectedLang(lang === "plaintext" ? null : lang);
+        detectTimer.current = setTimeout(async () => {
+          const lang = await detectLanguage(value);
+          setDetectedLang(lang === "plaintext" ? null : lang);
+        }, 400);
       } else if (!value.trim()) {
         setDetectedLang(null);
       }
@@ -43,6 +57,7 @@ export function useBeautifier() {
   const clearInput = useCallback(() => {
     setInput("");
     setDetectedLang(null);
+    if (detectTimer.current) clearTimeout(detectTimer.current);
   }, []);
 
   const handleModeChange = useCallback(
@@ -71,7 +86,7 @@ export function useBeautifier() {
     setIsFormatting(true);
     try {
       const lang = await getEffectiveLang();
-      if (!lang) { showError(t("invalidCodeError")); return; }
+      if (!lang) { showError(t("langNotDetectedError")); return; }
       setOutput(formatCode(input, lang));
     } catch (e) {
       showError(e instanceof Error ? e.message : t("invalidCodeError"));
@@ -102,6 +117,7 @@ export function useBeautifier() {
     setOutput("");
     setDetectedLang(null);
     setMode("auto");
+    if (detectTimer.current) clearTimeout(detectTimer.current);
   }, []);
 
   // ── Keyboard shortcuts (stable via refs to avoid listener churn) ──
@@ -137,6 +153,7 @@ export function useBeautifier() {
     mode,
     detectedLang,
     isFormatting,
+    shakeInput,
     diffOpen,
     error,
     handleInputChange,

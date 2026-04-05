@@ -36,7 +36,7 @@ export default function HomePage() {
   }
 
   const {
-    input, output, mode, detectedLang, isFormatting,
+    input, output, mode, detectedLang, isFormatting, shakeInput,
     diffOpen, error,
     handleInputChange, clearInput,
     handleModeChange, handleFormat,
@@ -68,6 +68,7 @@ export default function HomePage() {
                 onChange={handleInputChange}
                 onClear={clearInput}
                 placeholder={t("inputPlaceholder")}
+                className={shakeInput ? "shake" : ""}
               />
             </div>
 
@@ -83,9 +84,10 @@ export default function HomePage() {
               <CodePanel
                 label={t("output")}
                 value={output}
-                onChange={setOutput}
                 onClear={() => setOutput("")}
                 placeholder={t("outputPlaceholder")}
+                readOnly
+                scrollTopOnChange
               />
             </div>
           </div>

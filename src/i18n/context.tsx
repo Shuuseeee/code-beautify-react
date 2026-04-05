@@ -31,8 +31,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
-    setLocaleState(saved && locales[saved] ? saved : detectLocale());
+    const resolved = saved && locales[saved] ? saved : detectLocale();
+    setLocaleState(resolved);
+    document.documentElement.lang = resolved;
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);

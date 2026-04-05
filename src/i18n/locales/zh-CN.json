@@ -22,6 +22,7 @@
   "removeHtmlComments": "移除 HTML 注释",
   "removeJsComments": "移除 JS 注释",
   "formatting": "格式化中…",
+  "langNotDetectedError": "无法识别语言类型，请从上方标签手动选择语言。",
   "onboardingTitle": "欢迎使用代码美化工具",
   "onboardingSubtitle": "以下是您可以使用的功能：",
   "onboardingFeatures": "功能一览",
