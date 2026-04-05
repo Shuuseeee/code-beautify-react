@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, GitCompare, Eraser, ChevronDown, FileCode, FileCode2, MessageSquareX } from "lucide-react";
+import { Wand2, GitCompare, Eraser, ChevronDown, FileCode, FileCode2, MessageSquareX, Loader2 } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 
 interface ActionPanelProps {
@@ -9,6 +9,7 @@ interface ActionPanelProps {
   onCompare: () => void;
   onClearAll: () => void;
   onRemoveComments: (type: "html" | "js") => void;
+  isFormatting?: boolean;
 }
 
 export default function ActionPanel({
@@ -16,6 +17,7 @@ export default function ActionPanel({
   onCompare,
   onClearAll,
   onRemoveComments,
+  isFormatting = false,
 }: ActionPanelProps) {
   const { t } = useI18n();
   const [uncommentOpen, setUncommentOpen] = useState(false);
@@ -32,10 +34,11 @@ export default function ActionPanel({
         {/* Format Code — primary, spans full width */}
         <button
           onClick={onFormat}
-          className={`col-span-2 ${mobileBtn} bg-[#007AFF] hover:bg-[#0066CC] text-white shadow-sm`}
+          disabled={isFormatting}
+          className={`col-span-2 ${mobileBtn} bg-[#007AFF] hover:bg-[#0066CC] text-white shadow-sm disabled:opacity-60 disabled:cursor-not-allowed`}
         >
-          <Wand2 size={14} />
-          <span>{t("formatCode")}</span>
+          {isFormatting ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+          <span>{isFormatting ? t("formatting") : t("formatCode")}</span>
         </button>
 
         {/* Remove HTML comments */}
@@ -80,10 +83,11 @@ export default function ActionPanel({
         {/* Format Code */}
         <button
           onClick={onFormat}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#007AFF] hover:bg-[#0066CC] text-white text-sm font-semibold font-heading transition-colors shadow-sm"
+          disabled={isFormatting}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#007AFF] hover:bg-[#0066CC] text-white text-sm font-semibold font-heading transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <Wand2 size={15} />
-          <span>{t("formatCode")}</span>
+          {isFormatting ? <Loader2 size={15} className="animate-spin" /> : <Wand2 size={15} />}
+          <span>{isFormatting ? t("formatting") : t("formatCode")}</span>
         </button>
 
         {/* Remove Comments dropdown */}

@@ -20,5 +20,12 @@
   "output": "输出",
   "languageName": "中文",
   "removeHtmlComments": "移除 HTML 注释",
-  "removeJsComments": "移除 JS 注释"
+  "removeJsComments": "移除 JS 注释",
+  "formatting": "格式化中…",
+  "onboardingTitle": "欢迎使用代码美化工具",
+  "onboardingSubtitle": "以下是您可以使用的功能：",
+  "onboardingFeatures": "功能一览",
+  "onboardingShortcuts": "键盘快捷键",
+  "onboardingTip": "提示：您的主题和语言偏好会自动保存。",
+  "onboardingGotIt": "知道了！"
 }

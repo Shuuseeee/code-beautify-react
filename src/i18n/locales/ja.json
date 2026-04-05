@@ -20,5 +20,12 @@
   "output": "出力",
   "languageName": "日本語",
   "removeHtmlComments": "HTML コメントを削除",
-  "removeJsComments": "JS コメントを削除"
+  "removeJsComments": "JS コメントを削除",
+  "formatting": "整理中…",
+  "onboardingTitle": "Code Beautify へようこそ",
+  "onboardingSubtitle": "できることをご紹介します：",
+  "onboardingFeatures": "機能一覧",
+  "onboardingShortcuts": "キーボードショートカット",
+  "onboardingTip": "ヒント：テーマと言語の設定は自動的に保存されます。",
+  "onboardingGotIt": "了解！"
 }

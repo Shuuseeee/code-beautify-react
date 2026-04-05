@@ -1,15 +1,15 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, useCallback } from "react";
-import type { DetectedLang } from "@/lib/formatter";
+import type { DetectedLang, Mode } from "@/lib/formatter";
 import { useI18n } from "@/i18n/context";
-
-type Mode = "auto" | DetectedLang;
+import type { Theme } from "@/hooks/useTheme";
 
 interface ModeSelectorProps {
   mode: Mode;
   detectedLang: DetectedLang | null;
   onChange: (mode: Mode) => void;
+  theme: Theme;
 }
 
 const MODES: { value: Mode; label: string }[] = [
@@ -28,7 +28,7 @@ const LANG_COLOR: Record<string, { tint: string; text: string; textDark: string 
   json:       { tint: "rgba(0,   122, 255, 0.13)", text: "#007AFF",  textDark: "#409CFF" },
 };
 
-export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelectorProps) {
+export default function ModeSelector({ mode, detectedLang, onChange, theme }: ModeSelectorProps) {
   const { t, locale } = useI18n();
   const buttonRefs  = useRef<(HTMLButtonElement | null)[]>([]);
   const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
@@ -131,12 +131,8 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
 
           // Active text: use language color, else default
           const langColor = LANG_COLOR[value];
-          const isDarkMode =
-            typeof document !== "undefined" &&
-            document.documentElement.classList.contains("dark");
-
           const activeTextColor = active && langColor
-            ? (isDarkMode ? langColor.textDark : langColor.text)
+            ? (theme === "dark" ? langColor.textDark : langColor.text)
             : undefined;
 
           return (

@@ -20,5 +20,12 @@
   "output": "Output",
   "languageName": "English",
   "removeHtmlComments": "Remove HTML Comments",
-  "removeJsComments": "Remove JS Comments"
+  "removeJsComments": "Remove JS Comments",
+  "formatting": "Formatting…",
+  "onboardingTitle": "Welcome to Code Beautify",
+  "onboardingSubtitle": "Here's what you can do:",
+  "onboardingFeatures": "Features",
+  "onboardingShortcuts": "Keyboard Shortcuts",
+  "onboardingTip": "Tip: your theme and language preference are saved automatically.",
+  "onboardingGotIt": "Got it!"
 }
