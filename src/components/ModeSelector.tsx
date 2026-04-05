@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState, useCallback } from "react";
 import type { DetectedLang, Mode } from "@/lib/formatter";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
+import { langColorEntry } from "@/lib/langColors";
 
 interface ModeSelectorProps {
   mode: Mode;
@@ -19,14 +20,6 @@ const MODES: { value: Mode; label: string }[] = [
   { value: "javascript", label: "JS"   },
   { value: "json",       label: "JSON" },
 ];
-
-// iOS system colors for each language
-const LANG_COLOR: Record<string, { tint: string; text: string; textDark: string }> = {
-  html:       { tint: "rgba(255, 59,  48,  0.13)", text: "#E0352B",  textDark: "#FF6B63" },
-  css:        { tint: "rgba(255, 204, 0,   0.15)", text: "#997A00",  textDark: "#FFD426" },
-  javascript: { tint: "rgba(52,  199, 89,  0.13)", text: "#25A244",  textDark: "#3DD869" },
-  json:       { tint: "rgba(0,   122, 255, 0.13)", text: "#007AFF",  textDark: "#409CFF" },
-};
 
 export default function ModeSelector({ mode, detectedLang, onChange, theme }: ModeSelectorProps) {
   const { t, locale } = useI18n();
@@ -62,7 +55,7 @@ export default function ModeSelector({ mode, detectedLang, onChange, theme }: Mo
   // Resolve which language color to use for the active pill
   const activeLang: string | null =
     mode !== "auto" ? mode : detectedLang;
-  const activeLangColor = activeLang ? LANG_COLOR[activeLang] ?? null : null;
+  const activeLangColor = langColorEntry(activeLang);
 
   const pillBg     = activeLangColor ? activeLangColor.tint : "var(--glass-pill-bg)";
   const pillShadow = activeLangColor
@@ -130,7 +123,7 @@ export default function ModeSelector({ mode, detectedLang, onChange, theme }: Mo
           const pressed = pressing === value;
 
           // Active text: use language color, else default
-          const langColor = LANG_COLOR[value];
+          const langColor = langColorEntry(value);
           const activeTextColor = active && langColor
             ? (theme === "dark" ? langColor.textDark : langColor.text)
             : undefined;

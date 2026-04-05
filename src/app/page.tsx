@@ -84,9 +84,9 @@ export default function HomePage() {
               <CodePanel
                 label={t("output")}
                 value={output}
+                onChange={setOutput}
                 onClear={() => setOutput("")}
                 placeholder={t("outputPlaceholder")}
-                readOnly
                 scrollTopOnChange
               />
             </div>

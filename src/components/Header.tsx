@@ -1,11 +1,19 @@
 "use client";
 
 import { Sun, Moon, ChevronDown, CircleHelp } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
+import { LANG_COLOR } from "@/lib/langColors";
+
+const NAV_BLUE = LANG_COLOR.html;
+
+const NAV_LINKS = [
+  { href: "/" as const, labelKey: "navBeautify" as const },
+  { href: "/compare" as const, labelKey: "navCompare" as const },
+];
 
 export type { Theme };
 
@@ -26,6 +34,34 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const navLinkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [navPill, setNavPill] = useState<{ left: number; width: number } | null>(null);
+  const navPillInitialized = useRef(false);
+
+  const activeNavIndex = NAV_LINKS.findIndex(({ href }) => pathname === href);
+
+  useLayoutEffect(() => {
+    const idx = activeNavIndex >= 0 ? activeNavIndex : 0;
+    const el = navLinkRefs.current[idx];
+    if (!el) return;
+    setNavPill({ left: el.offsetLeft, width: el.offsetWidth });
+    navPillInitialized.current = true;
+  }, [pathname, locale, activeNavIndex]);
+
+  useEffect(() => {
+    function onResize() {
+      const idx = activeNavIndex >= 0 ? activeNavIndex : 0;
+      const el = navLinkRefs.current[idx];
+      if (!el) return;
+      setNavPill({ left: el.offsetLeft, width: el.offsetWidth });
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [activeNavIndex, locale]);
+
+  const navPillTransition = navPillInitialized.current
+    ? "left 340ms cubic-bezier(0.34, 1.56, 0.64, 1), width 340ms cubic-bezier(0.34, 1.56, 0.64, 1)"
+    : "none";
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -47,23 +83,53 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <span className="hidden sm:inline font-semibold text-anthro-dark dark:text-anthro-light text-sm font-heading tracking-wide">
             Code Beautify
           </span>
-          <nav className="flex items-center gap-0.5 md:gap-1">
-            {[
-              { href: "/",        label: t("navBeautify") },
-              { href: "/compare", label: t("navCompare")  },
-            ].map(({ href, label }) => {
+          <nav
+            className="relative inline-flex items-center p-1 rounded-2xl select-none shrink-0"
+            style={{
+              background: "var(--glass-bg)",
+              backdropFilter: "blur(28px) saturate(200%)",
+              WebkitBackdropFilter: "blur(28px) saturate(200%)",
+              border: "1px solid var(--glass-border)",
+              boxShadow: "var(--glass-shadow)",
+            }}
+          >
+            <div
+              className="pointer-events-none absolute inset-x-1 top-0 h-[1.5px] rounded-full z-[1]"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.7) 70%, transparent 100%)",
+              }}
+            />
+            {navPill && (
+              <div
+                className="absolute top-1 bottom-1 rounded-xl z-[1]"
+                style={{
+                  left: navPill.left,
+                  width: navPill.width,
+                  background: NAV_BLUE.tint,
+                  boxShadow: `var(--glass-pill-shadow), inset 0 0 0 0.5px ${NAV_BLUE.tint}`,
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                  transition: navPillTransition,
+                }}
+              />
+            )}
+            {NAV_LINKS.map(({ href, labelKey }, i) => {
               const active = pathname === href;
               return (
                 <Link
                   key={href}
+                  ref={(el) => {
+                    navLinkRefs.current[i] = el;
+                  }}
                   href={href}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-heading transition-colors ${
+                  className={`relative z-10 px-3 py-1.5 rounded-xl text-sm font-heading transition-colors ${
                     active
-                      ? "bg-[#007AFF]/10 text-[#007AFF] font-semibold"
-                      : "text-anthro-mid hover:text-anthro-dark dark:hover:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border"
+                      ? "font-semibold text-[#007AFF] dark:text-[#409CFF]"
+                      : "text-[color:var(--glass-text-inactive)] hover:text-anthro-dark dark:hover:text-anthro-light hover:bg-[var(--glass-hover-bg)]"
                   }`}
                 >
-                  {label}
+                  {t(labelKey)}
                 </Link>
               );
             })}
