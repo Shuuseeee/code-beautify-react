@@ -16,9 +16,9 @@ interface HeaderProps {
 }
 
 const LOCALES = [
-  { code: "zh-CN" as const, label: "中文" },
-  { code: "ja" as const, label: "日本語" },
-  { code: "en" as const, label: "English" },
+  { code: "zh-CN" as const, label: "中文",    short: "中文" },
+  { code: "ja"    as const, label: "日本語",  short: "日本語" },
+  { code: "en"    as const, label: "English", short: "EN"    },
 ];
 
 export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
@@ -37,17 +37,17 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const currentLabel = LOCALES.find((l) => l.code === locale)?.label ?? "English";
+  const currentLocale = LOCALES.find((l) => l.code === locale) ?? LOCALES[2];
 
   return (
     <header className="sticky top-0 z-40 bg-anthro-light/90 dark:bg-anthro-dark/90 backdrop-blur-md border-b border-anthro-border dark:border-anthro-dark-border">
-      <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
         {/* Logo + Nav */}
-        <div className="flex items-center gap-5 select-none">
-          <span className="font-semibold text-anthro-dark dark:text-anthro-light text-sm font-heading tracking-wide">
+        <div className="flex items-center gap-3 md:gap-5 select-none">
+          <span className="hidden sm:inline font-semibold text-anthro-dark dark:text-anthro-light text-sm font-heading tracking-wide">
             Code Beautify
           </span>
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-0.5 md:gap-1">
             {[
               { href: "/",        label: t("navBeautify") },
               { href: "/compare", label: t("navCompare")  },
@@ -96,7 +96,8 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               onClick={() => setOpen((v) => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-anthro-dark dark:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border transition-colors font-heading"
             >
-              <span>{currentLabel}</span>
+              <span className="hidden sm:inline">{currentLocale.label}</span>
+              <span className="sm:hidden">{currentLocale.short}</span>
               <ChevronDown
                 size={13}
                 className={`text-anthro-mid transition-transform duration-200 ${open ? "rotate-180" : ""}`}
