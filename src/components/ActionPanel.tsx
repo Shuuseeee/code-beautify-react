@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Wand2, GitCompare, Eraser, ChevronDown, FileCode, FileCode2,
   MessageSquareX, Loader2, Check, Link2, History, RotateCcw, X,
@@ -90,6 +90,15 @@ export default function ActionPanel({
   const [uncommentOpen,  setUncommentOpen]  = useState(false);
   const [historyOpen,    setHistoryOpen]    = useState(false);
   const [uncommentDone,  setUncommentDone]  = useState(false);
+
+  // Delayed-close refs: prevent dropdown from closing when mouse crosses the gap
+  const uncommentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openUncomment  = () => { if (uncommentTimer.current) clearTimeout(uncommentTimer.current); setUncommentOpen(true); };
+  const closeUncomment = () => { uncommentTimer.current = setTimeout(() => setUncommentOpen(false), 120); };
+  const openHistory    = () => { if (historyTimer.current)   clearTimeout(historyTimer.current);   setHistoryOpen(true);  };
+  const closeHistory   = () => { historyTimer.current   = setTimeout(() => setHistoryOpen(false),  120); };
 
   const handleUncomment = (type: "html" | "js") => {
     onRemoveComments(type);
@@ -270,8 +279,8 @@ export default function ActionPanel({
         <div className="relative">
           <button
             type="button"
-            onMouseEnter={() => setUncommentOpen(true)}
-            onMouseLeave={() => setUncommentOpen(false)}
+            onMouseEnter={openUncomment}
+            onMouseLeave={closeUncomment}
             style={ucPillStyle}
             className={`${desktopSecondary} border-0 justify-center gap-2 ${ucTextClass}`}
           >
@@ -281,8 +290,8 @@ export default function ActionPanel({
           </button>
           {uncommentOpen && (
             <div
-              onMouseEnter={() => setUncommentOpen(true)}
-              onMouseLeave={() => setUncommentOpen(false)}
+              onMouseEnter={openUncomment}
+              onMouseLeave={closeUncomment}
               className="absolute left-0 top-full mt-1 min-w-full w-max bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
             >
               <button
@@ -352,8 +361,8 @@ export default function ActionPanel({
         <div className="relative">
           <button
             type="button"
-            onMouseEnter={() => setHistoryOpen(true)}
-            onMouseLeave={() => setHistoryOpen(false)}
+            onMouseEnter={openHistory}
+            onMouseLeave={closeHistory}
             className={`${desktopSecondary} border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface justify-between gap-2 ${neutralText}`}
           >
             <div className="flex items-center gap-2">
@@ -370,8 +379,8 @@ export default function ActionPanel({
 
           {historyOpen && (
             <div
-              onMouseEnter={() => setHistoryOpen(true)}
-              onMouseLeave={() => setHistoryOpen(false)}
+              onMouseEnter={openHistory}
+              onMouseLeave={closeHistory}
               className="absolute left-0 top-full mt-1 w-[260px] bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
             >
               {history.length === 0 ? (
