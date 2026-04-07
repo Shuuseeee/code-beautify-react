@@ -31,7 +31,6 @@ export default function CodePanel({
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Scroll to top when value changes (for output panel after format)
   useEffect(() => {
     if (scrollTopOnChange && textareaRef.current) {
       textareaRef.current.scrollTop = 0;
@@ -45,7 +44,6 @@ export default function CodePanel({
     setTimeout(() => setCopied(false), 1500);
   }, [value]);
 
-  // Jump to error line: select the line and scroll it into view
   const handleErrorBadgeClick = useCallback(() => {
     if (!errorLine || !textareaRef.current) return;
     const ta = textareaRef.current;
@@ -58,7 +56,6 @@ export default function CodePanel({
     const lineEnd = pos + (lines[targetLine]?.length ?? 0);
     ta.focus();
     ta.setSelectionRange(pos, lineEnd);
-    // Approximate scroll: ~20px per line
     ta.scrollTop = Math.max(0, targetLine * 20 - 60);
   }, [errorLine]);
 
@@ -66,52 +63,33 @@ export default function CodePanel({
   const charCount = value.length;
 
   return (
-    <div className={`flex-1 flex flex-col min-w-0 bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden ${className}`}>
-      {/* Panel header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-anthro-border dark:border-anthro-dark-border select-none">
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">
-            {label}
+    // `relative` allows the utility buttons to be placed after the textarea in DOM
+    // (better tab order: textarea first) while visually floating them in the header area.
+    <div className={`relative flex-1 flex flex-col min-w-0 bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden ${className}`}>
+
+      {/* Panel header — only non-interactive content + contextual error badge */}
+      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-anthro-border dark:border-anthro-dark-border select-none">
+        <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">
+          {label}
+        </span>
+        {value && (
+          <span className="text-[10px] font-mono text-anthro-mid/50">
+            {lineCount}L · {charCount}C
           </span>
-          {value && (
-            <span className="text-[10px] font-mono text-anthro-mid/50">
-              {lineCount}L · {charCount}C
-            </span>
-          )}
-          {errorLine && (
-            <button
-              onClick={handleErrorBadgeClick}
-              title="Click to jump to error line"
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-red-50 dark:bg-red-500/15 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/25 transition-colors"
-            >
-              <TriangleAlert size={10} />
-              L{errorLine}
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-0.5">
+        )}
+        {errorLine && (
           <button
-            onClick={handleCopy}
-            title={t("copy")}
-            className="p-1.5 rounded-lg text-anthro-mid hover:text-[#007AFF] hover:bg-[#007AFF]/8 dark:hover:bg-[#007AFF]/12 transition-colors"
+            onClick={handleErrorBadgeClick}
+            title="Click to jump to error line"
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-red-50 dark:bg-red-500/15 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/25 transition-colors"
           >
-            {copied ? (
-              <Check size={14} className="text-green-500" />
-            ) : (
-              <Copy size={14} />
-            )}
+            <TriangleAlert size={10} />
+            L{errorLine}
           </button>
-          <button
-            onClick={onClear}
-            title={t("clear")}
-            className="p-1.5 rounded-lg text-anthro-mid hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Textarea */}
+      {/* Textarea — comes before utility buttons in DOM for correct tab order */}
       <textarea
         ref={textareaRef}
         value={value}
@@ -127,6 +105,24 @@ export default function CodePanel({
             : "bg-transparent"
         }`}
       />
+
+      {/* Utility buttons — DOM after textarea (tabbed last), visually in the header via absolute */}
+      <div className="absolute top-0 right-0 h-10 flex items-center gap-0.5 pr-1.5 z-10">
+        <button
+          onClick={handleCopy}
+          title={t("copy")}
+          className="p-1.5 rounded-lg text-anthro-mid hover:text-[#007AFF] hover:bg-[#007AFF]/8 dark:hover:bg-[#007AFF]/12 transition-colors"
+        >
+          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+        </button>
+        <button
+          onClick={onClear}
+          title={t("clear")}
+          className="p-1.5 rounded-lg text-anthro-mid hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
     </div>
   );
 }

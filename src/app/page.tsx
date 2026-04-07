@@ -33,8 +33,14 @@ export default function HomePage() {
           theme={theme}
         />
 
+        {/*
+          DOM order: Left → Right → ActionPanel
+          Desktop visual order (via CSS order): Left(1) → ActionPanel(2) → Right(3)
+          This gives the tab sequence: left textarea → right textarea → action buttons
+        */}
         <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:flex-1 md:min-h-0">
-          <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col">
+          {/* Left panel — DOM first, visual first */}
+          <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col md:order-1">
             <CodePanel
               label={t("input")}
               value={input}
@@ -46,22 +52,8 @@ export default function HomePage() {
             />
           </div>
 
-          <ActionPanel
-            onFormat={handleFormat}
-            onCompare={handleCompare}
-            onClearAll={handleClearAll}
-            onRemoveComments={handleRemoveComments}
-            onShare={handleShare}
-            isFormatting={isFormatting}
-            formatSuccess={formatSuccess}
-            shareCopied={shareCopied}
-            history={history}
-            onRestoreHistory={handleRestoreHistory}
-            onRemoveHistory={removeHistoryEntry}
-            onClearHistory={clearHistory}
-          />
-
-          <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col">
+          {/* Right panel — DOM second (tab order), visual right on desktop (order-3) */}
+          <div className="h-[40vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col md:order-3">
             <CodePanel
               label={t("output")}
               value={output}
@@ -69,6 +61,24 @@ export default function HomePage() {
               onClear={() => setOutput("")}
               placeholder={t("outputPlaceholder")}
               scrollTopOnChange
+            />
+          </div>
+
+          {/* ActionPanel — DOM third, visual middle on desktop (order-2) */}
+          <div className="md:order-2">
+            <ActionPanel
+              onFormat={handleFormat}
+              onCompare={handleCompare}
+              onClearAll={handleClearAll}
+              onRemoveComments={handleRemoveComments}
+              onShare={handleShare}
+              isFormatting={isFormatting}
+              formatSuccess={formatSuccess}
+              shareCopied={shareCopied}
+              history={history}
+              onRestoreHistory={handleRestoreHistory}
+              onRemoveHistory={removeHistoryEntry}
+              onClearHistory={clearHistory}
             />
           </div>
         </div>
