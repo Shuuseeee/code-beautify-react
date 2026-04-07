@@ -6,7 +6,11 @@ import ClientLayout from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "Code Beautify",
-  description: "Format and beautify HTML, CSS, JavaScript, and JSON code",
+  description: "Format and beautify HTML, CSS, JavaScript, and JSON code online. Supports diff view, ServiceNow syntax highlighting, and more.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
