@@ -74,15 +74,6 @@ export default function ModeSelector({ mode, detectedLang, onChange, theme }: Mo
           boxShadow: "var(--glass-shadow)",
         }}
       >
-        {/* Specular top sheen */}
-        <div
-          className="pointer-events-none absolute inset-x-1 top-0 h-[1.5px] rounded-full"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.7) 70%, transparent 100%)",
-          }}
-        />
-
         {/* Sliding glass pill — colored tint when a language is active */}
         {pill && (
           <div

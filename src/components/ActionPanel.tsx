@@ -186,7 +186,8 @@ export default function ActionPanel({
         <button
           type="button"
           onClick={onShare}
-          className={`${mobileBtn} border border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface ${neutralText}`}
+          className={`${mobileBtn} ${neutralText}`}
+          style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
         >
           {shareCopied ? <Check size={14} className="text-green-500" /> : <Link2 size={14} />}
           <span>{shareCopied ? t("shareLinkCopied") : t("shareCode")}</span>
@@ -196,7 +197,8 @@ export default function ActionPanel({
         <button
           type="button"
           onClick={() => setHistoryOpen((v) => !v)}
-          className={`${mobileBtn} border border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface ${neutralText}`}
+          className={`${mobileBtn} ${neutralText}`}
+          style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
         >
           <History size={14} />
           <span>{t("history")}</span>
@@ -207,7 +209,10 @@ export default function ActionPanel({
 
         {/* Mobile history dropdown */}
         {historyOpen && (
-          <div className="col-span-2 bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden shadow-lg">
+          <div
+            className="col-span-2 rounded-xl overflow-hidden"
+            style={{ background: "var(--glass-bg)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid var(--glass-border)", boxShadow: "var(--glass-shadow)" }}
+          >
             {history.length === 0 ? (
               <p className="px-4 py-3 text-xs text-anthro-mid text-center">{t("historyEmpty")}</p>
             ) : (
@@ -292,7 +297,8 @@ export default function ActionPanel({
             <div
               onMouseEnter={openUncomment}
               onMouseLeave={closeUncomment}
-              className="absolute left-0 top-full mt-1 min-w-full w-max bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
+              className="absolute left-0 top-full mt-1 min-w-full w-max rounded-xl overflow-hidden z-20"
+              style={{ background: "var(--glass-bg)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid var(--glass-border)", boxShadow: "var(--glass-shadow)" }}
             >
               <button
                 type="button"
@@ -349,7 +355,8 @@ export default function ActionPanel({
         <button
           type="button"
           onClick={onShare}
-          className={`${desktopSecondary} border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface justify-center gap-2 ${neutralText}`}
+          className={`${desktopSecondary} justify-center gap-2 ${neutralText}`}
+          style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
         >
           {shareCopied ? <Check size={15} className="text-green-500" /> : <Link2 size={15} />}
           <span className={shareCopied ? "text-green-500" : ""}>
@@ -363,7 +370,8 @@ export default function ActionPanel({
             type="button"
             onMouseEnter={openHistory}
             onMouseLeave={closeHistory}
-            className={`${desktopSecondary} border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface justify-between gap-2 ${neutralText}`}
+            className={`${desktopSecondary} justify-between gap-2 ${neutralText} ${historyOpen ? "rounded-b-none" : ""}`}
+            style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", borderBottom: historyOpen ? "1px solid transparent" : undefined }}
           >
             <div className="flex items-center gap-2">
               <History size={15} />
@@ -381,32 +389,32 @@ export default function ActionPanel({
             <div
               onMouseEnter={openHistory}
               onMouseLeave={closeHistory}
-              className="absolute left-0 top-full mt-1 w-[260px] bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl shadow-lg overflow-hidden z-20"
+              className="absolute left-0 top-full w-full rounded-b-xl overflow-hidden z-20"
+              style={{ background: "var(--glass-bg)", backdropFilter: "blur(24px) saturate(180%)", WebkitBackdropFilter: "blur(24px) saturate(180%)", border: "1px solid var(--glass-border)", borderTop: "none", boxShadow: "var(--glass-shadow)" }}
             >
               {history.length === 0 ? (
                 <p className="px-4 py-3 text-xs text-anthro-mid text-center">{t("historyEmpty")}</p>
               ) : (
                 <>
                   {history.map((entry) => (
-                    <div key={entry.id} className="flex items-center border-b border-anthro-border dark:border-anthro-dark-border last:border-0 group">
+                    <div key={entry.id} className="flex items-center border-t border-white/30 dark:border-white/[0.06] group">
                       <button
                         type="button"
                         onClick={() => { onRestoreHistory?.(entry); setHistoryOpen(false); }}
-                        className="flex-1 flex items-start gap-2.5 px-3 py-2.5 hover:bg-anthro-light dark:hover:bg-anthro-dark/40 transition-colors text-left"
+                        className="flex-1 flex items-start gap-2 px-3 py-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors text-left"
                       >
-                        <RotateCcw size={12} className="shrink-0 mt-0.5 text-anthro-mid" />
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5 mb-0.5">
+                          <div className="flex items-center justify-between gap-1 mb-0.5">
                             <span
                               className="text-[10px] font-mono font-semibold uppercase"
                               style={{ color: LANG_COLOR[entry.lang as keyof typeof LANG_COLOR]?.text ?? "#888" }}
                             >
                               {entry.lang}
                             </span>
-                            <span className="text-[10px] text-anthro-mid/60">{relativeTime(entry.timestamp)}</span>
+                            <span className="text-[10px] text-anthro-mid/50 shrink-0">{relativeTime(entry.timestamp)}</span>
                           </div>
-                          <p className="text-xs font-mono text-anthro-dark dark:text-anthro-light truncate opacity-70">
-                            {entry.input.split("\n")[0].slice(0, 55)}
+                          <p className="text-[11px] font-mono text-anthro-dark dark:text-anthro-light truncate opacity-60 leading-snug">
+                            {entry.input.split("\n")[0].slice(0, 40) || "—"}
                           </p>
                         </div>
                       </button>
@@ -416,14 +424,14 @@ export default function ActionPanel({
                         className="opacity-0 group-hover:opacity-100 pr-3 pl-1 py-1 text-anthro-mid/50 hover:text-red-500 transition-all shrink-0"
                         title="Remove"
                       >
-                        <X size={12} />
+                        <X size={11} />
                       </button>
                     </div>
                   ))}
                   <button
                     type="button"
                     onClick={() => { onClearHistory?.(); setHistoryOpen(false); }}
-                    className="w-full px-4 py-2 text-[11px] font-heading text-anthro-mid hover:text-red-500 transition-colors text-center"
+                    className="w-full px-4 py-1.5 text-[10px] font-heading text-anthro-mid/60 hover:text-red-500 transition-colors text-center border-t border-white/30 dark:border-white/[0.06]"
                   >
                     {t("clearHistory")}
                   </button>

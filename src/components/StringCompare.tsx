@@ -204,8 +204,18 @@ export default function StringCompare() {
           { label: t("compareLeft"),  value: left,  set: setLeft,  ph: t("comparePlaceholderLeft")  },
           { label: t("compareRight"), value: right, set: setRight, ph: t("comparePlaceholderRight") },
         ].map(({ label, value, set, ph }) => (
-          <div key={label} className="flex flex-col bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-anthro-border dark:border-anthro-dark-border select-none">
+          <div
+            key={label}
+            className="flex flex-col rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--glass-bg)",
+              backdropFilter: "blur(24px) saturate(180%)",
+              WebkitBackdropFilter: "blur(24px) saturate(180%)",
+              border: "1px solid var(--glass-border)",
+              boxShadow: "var(--glass-shadow)",
+            }}
+          >
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.07] dark:border-white/[0.08] bg-black/[0.025] dark:bg-white/[0.04] select-none">
               <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">{label}</span>
               {value && (
                 <span className="text-[10px] font-mono text-anthro-mid/50">
@@ -262,7 +272,16 @@ export default function StringCompare() {
 
       {/* Diff result — difff.jp style */}
       {rows ? (
-        <div className="flex-1 min-h-0 overflow-auto bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl">
+        <div
+          className="flex-1 min-h-0 overflow-auto rounded-2xl"
+          style={{
+            background: "var(--glass-bg)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            border: "1px solid var(--glass-border)",
+            boxShadow: "var(--glass-shadow)",
+          }}
+        >
           <table className="w-full text-xs font-mono border-collapse min-w-[500px]" style={{ tableLayout: "fixed" }}>
             <colgroup>
               <col style={{ width: "50%" }} />

@@ -65,10 +65,19 @@ export default function CodePanel({
   return (
     // `relative` allows the utility buttons to be placed after the textarea in DOM
     // (better tab order: textarea first) while visually floating them in the header area.
-    <div className={`relative flex-1 flex flex-col min-w-0 bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-xl overflow-hidden ${className}`}>
+    <div
+      className={`relative flex-1 flex flex-col min-w-0 rounded-2xl overflow-hidden ${className}`}
+      style={{
+        background: "var(--glass-bg)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid var(--glass-border)",
+        boxShadow: "var(--glass-shadow)",
+      }}
+    >
 
-      {/* Panel header — only non-interactive content + contextual error badge */}
-      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-anthro-border dark:border-anthro-dark-border select-none">
+      {/* Panel header */}
+      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-black/[0.07] dark:border-white/[0.08] bg-black/[0.025] dark:bg-white/[0.04] select-none">
         <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">
           {label}
         </span>

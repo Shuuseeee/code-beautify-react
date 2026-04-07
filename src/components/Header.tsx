@@ -78,7 +78,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const currentLocale = LOCALES.find((l) => l.code === locale) ?? LOCALES[2];
 
   return (
-    <header className="sticky top-0 z-40 bg-anthro-light/90 dark:bg-anthro-dark/90 backdrop-blur-md border-b border-anthro-border dark:border-anthro-dark-border">
+    <header className="sticky top-0 z-40 backdrop-blur-2xl border-b border-white/50 dark:border-white/[0.07]" style={{ background: "var(--glass-bg)" }}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
         {/* Logo + Nav */}
         <div className="flex items-center gap-3 md:gap-5 select-none">
@@ -95,13 +95,6 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               boxShadow: "var(--glass-shadow)",
             }}
           >
-            <div
-              className="pointer-events-none absolute inset-x-1 top-0 h-[1.5px] rounded-full z-[1]"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.7) 70%, transparent 100%)",
-              }}
-            />
             {/* Active pill */}
             {navPill && (
               <div
@@ -180,7 +173,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-anthro-dark dark:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border transition-colors font-heading"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-anthro-dark dark:text-anthro-light hover:bg-anthro-border dark:hover:bg-anthro-dark-border transition-colors font-heading whitespace-nowrap"
             >
               <span className="hidden sm:inline">{currentLocale.label}</span>
               <span className="sm:hidden">{currentLocale.short}</span>
