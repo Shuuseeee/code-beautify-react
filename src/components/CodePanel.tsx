@@ -111,6 +111,7 @@ export default function CodePanel({
         <button
           onClick={handleCopy}
           title={t("copy")}
+          tabIndex={-1}
           className="p-1.5 rounded-lg text-anthro-mid hover:text-[#007AFF] hover:bg-[#007AFF]/8 dark:hover:bg-[#007AFF]/12 transition-colors"
         >
           {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
@@ -118,6 +119,7 @@ export default function CodePanel({
         <button
           onClick={onClear}
           title={t("clear")}
+          tabIndex={-1}
           className="p-1.5 rounded-lg text-anthro-mid hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
         >
           <Trash2 size={14} />
