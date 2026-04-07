@@ -1,9 +1,31 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { diffLines, diffChars, type Change } from "diff";
-import { GitCompare, Eraser } from "lucide-react";
+import { GitCompare, Eraser, Link2, Check } from "lucide-react";
 import { useI18n } from "@/i18n/context";
+
+// ── URL share helpers ─────────────────────────────────────────────────────────
+
+function encodeShare(left: string, right: string): string {
+  const json = JSON.stringify({ l: left, r: right });
+  const bytes = new TextEncoder().encode(json);
+  const binary = Array.from(bytes, (b) => String.fromCharCode(b)).join("");
+  return btoa(binary);
+}
+
+function decodeShare(encoded: string): { l: string; r: string } | null {
+  try {
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const json = new TextDecoder().decode(bytes);
+    const parsed = JSON.parse(json);
+    if (typeof parsed.l === "string" && typeof parsed.r === "string") return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -133,9 +155,24 @@ function CellContent({
 
 export default function StringCompare() {
   const { t } = useI18n();
-  const [left, setLeft]   = useState("");
-  const [right, setRight] = useState("");
-  const [rows, setRows]   = useState<Row[] | null>(null);
+  const [left, setLeft]         = useState("");
+  const [right, setRight]       = useState("");
+  const [rows, setRows]         = useState<Row[] | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  // Restore from URL hash on mount and auto-compare
+  useEffect(() => {
+    const match = window.location.hash.match(/^#compare=(.+)/);
+    if (match) {
+      const data = decodeShare(match[1]);
+      if (data) {
+        setLeft(data.l);
+        setRight(data.r);
+        setRows(buildRows(data.l, data.r));
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }
+  }, []);
 
   const handleCompare = useCallback(() => {
     setRows(buildRows(left, right));
@@ -144,6 +181,16 @@ export default function StringCompare() {
   const handleClear = useCallback(() => {
     setLeft(""); setRight(""); setRows(null);
   }, []);
+
+  const handleShare = useCallback(() => {
+    if (!left.trim() && !right.trim()) return;
+    const encoded = encodeShare(left, right);
+    const url = `${window.location.origin}${window.location.pathname}#compare=${encoded}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
+  }, [left, right]);
 
   const removedCount = rows?.filter((r) => r.type === "removed" || r.type === "changed").length ?? 0;
   const addedCount   = rows?.filter((r) => r.type === "added"   || r.type === "changed").length ?? 0;
@@ -194,6 +241,15 @@ export default function StringCompare() {
         >
           <Eraser size={15} />
           <span>{t("clearAll")}</span>
+        </button>
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-anthro-border dark:border-anthro-dark-border bg-white dark:bg-anthro-surface text-anthro-mid hover:text-anthro-dark dark:hover:text-anthro-light text-sm font-medium font-heading transition-colors"
+        >
+          {shareCopied ? <Check size={15} className="text-green-500" /> : <Link2 size={15} />}
+          <span className={shareCopied ? "text-green-500" : ""}>
+            {shareCopied ? t("shareLinkCopied") : t("shareCode")}
+          </span>
         </button>
         {rows && (
           <div className="flex items-center gap-3 ml-1 text-xs font-mono">
