@@ -5,12 +5,12 @@ import CodePanel from "@/components/CodePanel";
 import ActionPanel from "@/components/ActionPanel";
 import DiffModal from "@/components/DiffModal";
 import ErrorModal from "@/components/ErrorModal";
-import { useTheme } from "@/hooks/useTheme";
+import { useThemeContext } from "@/hooks/ThemeContext";
 import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 
 export default function HomePage() {
-  const { theme } = useTheme();
+  const { theme } = useThemeContext();
   const { t } = useI18n();
 
   const {
@@ -49,6 +49,8 @@ export default function HomePage() {
               placeholder={t("inputPlaceholder")}
               className={shakeInput ? "shake" : ""}
               errorLine={errorLine}
+              language={detectedLang ?? "plaintext"}
+              theme={theme}
             />
           </div>
 
@@ -61,6 +63,8 @@ export default function HomePage() {
               onClear={() => setOutput("")}
               placeholder={t("outputPlaceholder")}
               scrollTopOnChange
+              language={detectedLang ?? "plaintext"}
+              theme={theme}
             />
           </div>
 

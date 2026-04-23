@@ -3,6 +3,18 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Copy, Check, Trash2, TriangleAlert } from "lucide-react";
 import { useI18n } from "@/i18n/context";
+import dynamic from "next/dynamic";
+import type * as Monaco from "monaco-editor";
+import {
+  registerServiceNowLanguage,
+  registerGlassThemes,
+  isServiceNowCode,
+} from "@/lib/monacoServiceNow";
+
+const MonacoEditor = dynamic(
+  () => import("@monaco-editor/react").then((m) => m.default),
+  { ssr: false, loading: () => <div className="flex-1" /> }
+);
 
 interface CodePanelProps {
   label: string;
@@ -14,6 +26,8 @@ interface CodePanelProps {
   scrollTopOnChange?: boolean;
   className?: string;
   errorLine?: number | null;
+  language?: string;
+  theme?: "light" | "dark";
 }
 
 export default function CodePanel({
@@ -26,14 +40,16 @@ export default function CodePanel({
   scrollTopOnChange = false,
   className = "",
   errorLine = null,
+  language,
+  theme = "light",
 }: CodePanelProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
-    if (scrollTopOnChange && textareaRef.current) {
-      textareaRef.current.scrollTop = 0;
+    if (scrollTopOnChange && editorRef.current) {
+      editorRef.current.revealLine(1);
     }
   }, [value, scrollTopOnChange]);
 
@@ -45,39 +61,49 @@ export default function CodePanel({
   }, [value]);
 
   const handleErrorBadgeClick = useCallback(() => {
-    if (!errorLine || !textareaRef.current) return;
-    const ta = textareaRef.current;
-    const lines = ta.value.split("\n");
-    const targetLine = Math.min(errorLine, lines.length) - 1;
-    let pos = 0;
-    for (let i = 0; i < targetLine; i++) {
-      pos += lines[i].length + 1;
-    }
-    const lineEnd = pos + (lines[targetLine]?.length ?? 0);
-    ta.focus();
-    ta.setSelectionRange(pos, lineEnd);
-    ta.scrollTop = Math.max(0, targetLine * 20 - 60);
+    if (!errorLine || !editorRef.current) return;
+    const editor = editorRef.current;
+    const model = editor.getModel();
+    if (!model) return;
+    const target = Math.min(errorLine, model.getLineCount());
+    editor.revealLineInCenter(target);
+    editor.setSelection({
+      startLineNumber: target,
+      startColumn: 1,
+      endLineNumber: target,
+      endColumn: model.getLineLength(target) + 1,
+    });
+    editor.focus();
   }, [errorLine]);
 
   const lineCount = value ? value.split("\n").length : 0;
   const charCount = value.length;
 
+  const isSnow = isServiceNowCode(value);
+  const monacoLang = isSnow ? "servicenow" : (language ?? "plaintext");
+  const monacoTheme = isSnow
+    ? (theme === "dark" ? "glass-snow-dark" : "glass-snow-light")
+    : (theme === "dark" ? "glass-dark" : "glass-light");
+
+  const handleBeforeMount = useCallback((monaco: typeof Monaco) => {
+    registerServiceNowLanguage(monaco);
+    registerGlassThemes(monaco);
+  }, []);
+
+  const handleMount = useCallback((editor: Monaco.editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor;
+  }, []);
+
   return (
-    // `relative` allows the utility buttons to be placed after the textarea in DOM
-    // (better tab order: textarea first) while visually floating them in the header area.
     <div
       className={`relative flex-1 flex flex-col min-w-0 rounded-2xl overflow-hidden ${className}`}
       style={{
-        background: "var(--glass-bg)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid var(--glass-border)",
-        boxShadow: "var(--glass-shadow)",
+        background: "var(--panel-bg)",
+        border: "1px solid var(--panel-border)",
       }}
     >
-
       {/* Panel header */}
-      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-black/[0.07] dark:border-white/[0.08] bg-black/[0.025] dark:bg-white/[0.04] select-none">
+      <div className="flex items-center gap-2.5 px-4 py-2.5 border-b border-black/[0.04] dark:border-white/[0.05] bg-black/[0.02] dark:bg-white/[0.03] select-none shrink-0">
         <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">
           {label}
         </span>
@@ -98,42 +124,77 @@ export default function CodePanel({
         )}
       </div>
 
-      {/* Textarea — comes before utility buttons in DOM for correct tab order */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        readOnly={readOnly}
-        placeholder={placeholder}
-        spellCheck={false}
-        autoCapitalize="off"
-        autoCorrect="off"
-        className={`flex-1 w-full p-4 resize-none text-sm text-anthro-dark dark:text-anthro-light placeholder:text-anthro-mid/50 focus:outline-none leading-relaxed ${
-          readOnly
-            ? "bg-anthro-light/60 dark:bg-anthro-dark/40 cursor-default"
-            : "bg-transparent"
-        }`}
-      />
-
-      {/* Utility buttons — DOM after textarea (tabbed last), visually in the header via absolute */}
-      <div className="absolute top-0 right-0 h-10 flex items-center gap-0.5 pr-1.5 z-10">
-        <button
-          onClick={handleCopy}
-          title={t("copy")}
-          tabIndex={-1}
-          className="p-1.5 rounded-lg text-anthro-mid hover:text-[#007AFF] hover:bg-[#007AFF]/8 dark:hover:bg-[#007AFF]/12 transition-colors"
-        >
-          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-        </button>
-        <button
-          onClick={onClear}
-          title={t("clear")}
-          tabIndex={-1}
-          className="p-1.5 rounded-lg text-anthro-mid hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-        >
-          <Trash2 size={14} />
-        </button>
+      {/* Editor area */}
+      <div className="relative flex-1 min-h-0">
+        <MonacoEditor
+          value={value}
+          language={monacoLang}
+          theme={monacoTheme}
+          onChange={(val) => onChange?.(val ?? "")}
+          beforeMount={handleBeforeMount}
+          onMount={handleMount}
+          options={{
+            readOnly,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 13,
+            lineNumbers: "on",
+            lineNumbersMinChars: 3,
+            automaticLayout: true,
+            wordWrap: "on",
+            padding: { top: 10, bottom: 10 },
+            overviewRulerLanes: 0,
+            hideCursorInOverviewRuler: true,
+            scrollbar: {
+              verticalScrollbarSize: 6,
+              horizontalScrollbarSize: 6,
+              alwaysConsumeMouseWheel: false,
+            },
+            renderLineHighlight: "line",
+            contextmenu: false,
+            quickSuggestions: false,
+            parameterHints: { enabled: false },
+            suggestOnTriggerCharacters: false,
+            acceptSuggestionOnEnter: "off",
+            tabCompletion: "off",
+            wordBasedSuggestions: "off",
+            renderWhitespace: "none",
+            folding: false,
+          }}
+          height="100%"
+        />
+        {/* Placeholder overlay — shown only when empty */}
+        {!value && placeholder && (
+          <div
+            className="absolute top-0 left-0 right-0 pointer-events-none select-none pt-[10px] pl-[52px] text-sm text-anthro-mid/40"
+            style={{ fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace" }}
+          >
+            {placeholder}
+          </div>
+        )}
       </div>
+
+      {/* Utility buttons — only shown when panel has content */}
+      {value && (
+        <div className="absolute top-0 right-0 h-10 flex items-center gap-0.5 pr-1.5 z-10">
+          <button
+            onClick={handleCopy}
+            title={t("copy")}
+            tabIndex={-1}
+            className="p-1.5 rounded-lg text-anthro-mid hover:text-[#007AFF] hover:bg-[#007AFF]/8 dark:hover:bg-[#007AFF]/12 transition-colors"
+          >
+            {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+          </button>
+          <button
+            onClick={onClear}
+            title={t("clear")}
+            tabIndex={-1}
+            className="p-1.5 rounded-lg text-anthro-mid hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

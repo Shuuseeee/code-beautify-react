@@ -78,7 +78,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const currentLocale = LOCALES.find((l) => l.code === locale) ?? LOCALES[2];
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-2xl border-b border-white/50 dark:border-white/[0.07]" style={{ background: "var(--glass-bg)" }}>
+    <header className="sticky top-0 z-40 backdrop-blur-2xl" style={{ background: "var(--glass-bg)" }}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
         {/* Logo + Nav */}
         <div className="flex items-center gap-3 md:gap-5 select-none">
@@ -91,8 +91,6 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               background: "var(--glass-bg)",
               backdropFilter: "blur(28px) saturate(200%)",
               WebkitBackdropFilter: "blur(28px) saturate(200%)",
-              border: "1px solid var(--glass-border)",
-              boxShadow: "var(--glass-shadow)",
             }}
           >
             {/* Active pill */}

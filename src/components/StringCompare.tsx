@@ -151,14 +151,59 @@ function CellContent({
   return <>{text || "\u00a0"}</>;
 }
 
+// ── Default demo content ──────────────────────────────────────────────────────
+
+const DEFAULT_LEFT = `下記の文章を比較してください。
+   Betty Botter bought some butter,
+But, she said, this butter's bitter;
+If I put it in my batter,
+It will make my batter bitter,
+But a bit of better butter
+Will make my batter better.
+So she bought a bit of butter
+Better than her bitter butter,
+And she put it in her batter,
+And it made her batter better,
+So 'twas better Betty Botter
+Bought a bit of better butter.`;
+
+const DEFAULT_RIGHT = `下記の文章を，ﾋﾋ較してくだちい．
+Betty Botter bought some butter,
+But, she said, the butter's bitter;
+If I put it in my batter,
+That will make my batter bitter.
+But a bit of better butter,
+That will make my batter better.
+So she bought a bit of butter
+Better than her bitter butter.
+And she put it in her batter,
+And it made her batter better.
+So it was better Betty Botter
+Bought a bit of better butter.`;
+
 // ── Main component ────────────────────────────────────────────────────────────
+
+const SS_LEFT  = "compare-left";
+const SS_RIGHT = "compare-right";
+
+function ssGet(key: string, fallback: string): string {
+  if (typeof window === "undefined") return fallback;
+  return sessionStorage.getItem(key) ?? fallback;
+}
 
 export default function StringCompare() {
   const { t } = useI18n();
-  const [left, setLeft]         = useState("");
-  const [right, setRight]       = useState("");
-  const [rows, setRows]         = useState<Row[] | null>(null);
+  const [left, setLeft]   = useState(() => ssGet(SS_LEFT,  DEFAULT_LEFT));
+  const [right, setRight] = useState(() => ssGet(SS_RIGHT, DEFAULT_RIGHT));
+  const [rows, setRows]   = useState<Row[] | null>(() => {
+    const l = ssGet(SS_LEFT,  DEFAULT_LEFT);
+    const r = ssGet(SS_RIGHT, DEFAULT_RIGHT);
+    return buildRows(l, r);
+  });
   const [shareCopied, setShareCopied] = useState(false);
+
+  const setLeftPersist  = useCallback((v: string) => { setLeft(v);  sessionStorage.setItem(SS_LEFT,  v); }, []);
+  const setRightPersist = useCallback((v: string) => { setRight(v); sessionStorage.setItem(SS_RIGHT, v); }, []);
 
   // Restore from URL hash on mount and auto-compare
   useEffect(() => {
@@ -166,21 +211,21 @@ export default function StringCompare() {
     if (match) {
       const data = decodeShare(match[1]);
       if (data) {
-        setLeft(data.l);
-        setRight(data.r);
+        setLeftPersist(data.l);
+        setRightPersist(data.r);
         setRows(buildRows(data.l, data.r));
         window.history.replaceState(null, "", window.location.pathname);
       }
     }
-  }, []);
+  }, [setLeftPersist, setRightPersist]);
 
   const handleCompare = useCallback(() => {
     setRows(buildRows(left, right));
   }, [left, right]);
 
   const handleClear = useCallback(() => {
-    setLeft(""); setRight(""); setRows(null);
-  }, []);
+    setLeftPersist(""); setRightPersist(""); setRows(null);
+  }, [setLeftPersist, setRightPersist]);
 
   const handleShare = useCallback(() => {
     if (!left.trim() && !right.trim()) return;
@@ -201,21 +246,18 @@ export default function StringCompare() {
       {/* Input textareas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 h-[35vh] md:h-[38vh]">
         {[
-          { label: t("compareLeft"),  value: left,  set: setLeft,  ph: t("comparePlaceholderLeft")  },
-          { label: t("compareRight"), value: right, set: setRight, ph: t("comparePlaceholderRight") },
+          { label: t("compareLeft"),  value: left,  set: setLeftPersist,  ph: t("comparePlaceholderLeft")  },
+          { label: t("compareRight"), value: right, set: setRightPersist, ph: t("comparePlaceholderRight") },
         ].map(({ label, value, set, ph }) => (
           <div
             key={label}
             className="flex flex-col rounded-2xl overflow-hidden"
             style={{
-              background: "var(--glass-bg)",
-              backdropFilter: "blur(24px) saturate(180%)",
-              WebkitBackdropFilter: "blur(24px) saturate(180%)",
-              border: "1px solid var(--glass-border)",
-              boxShadow: "var(--glass-shadow)",
+              background: "var(--panel-bg)",
+              border: "1px solid var(--panel-border)",
             }}
           >
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.07] dark:border-white/[0.08] bg-black/[0.025] dark:bg-white/[0.04] select-none">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.04] dark:border-white/[0.05] bg-black/[0.02] dark:bg-white/[0.03] select-none">
               <span className="text-[10px] font-semibold font-heading uppercase tracking-widest text-anthro-mid">{label}</span>
               {value && (
                 <span className="text-[10px] font-mono text-anthro-mid/50">
@@ -275,11 +317,8 @@ export default function StringCompare() {
         <div
           className="flex-1 min-h-0 overflow-auto rounded-2xl"
           style={{
-            background: "var(--glass-bg)",
-            backdropFilter: "blur(24px) saturate(180%)",
-            WebkitBackdropFilter: "blur(24px) saturate(180%)",
-            border: "1px solid var(--glass-border)",
-            boxShadow: "var(--glass-shadow)",
+            background: "var(--panel-bg)",
+            border: "1px solid var(--panel-border)",
           }}
         >
           <table className="w-full text-xs font-mono border-collapse min-w-[500px]" style={{ tableLayout: "fixed" }}>

@@ -24,29 +24,35 @@
 
 /* ── iOS 26 Liquid Glass variables ── */
 :root {
-  --app-bg: #faf9f5;
-  --glass-bg: rgba(255, 255, 255, 0.58);
-  --glass-border: rgba(255, 255, 255, 0.75);
-  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --glass-pill-bg: rgba(255, 255, 255, 0.88);
-  --glass-pill-shadow: 0 2px 8px rgba(0, 0, 0, 0.08),
-    0 0 0 0.5px rgba(0, 0, 0, 0.05);
-  --glass-text-active: #141413;
-  --glass-text-inactive: rgba(20, 20, 19, 0.42);
-  --glass-hover-bg: rgba(255, 255, 255, 0.35);
+  --app-bg: #F2F2F7;
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: transparent;
+  --glass-shadow: none;
+  --glass-pill-bg: rgba(255, 255, 255, 0.92);
+  --glass-pill-shadow: 0 1px 4px rgba(0, 0, 0, 0.06),
+    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  --glass-text-active: #000000;
+  --glass-text-inactive: rgba(60, 60, 67, 0.4);
+  --glass-hover-bg: rgba(60, 60, 67, 0.06);
+  /* Content panels — solid surface, not glass */
+  --panel-bg: rgba(255, 255, 255, 0.94);
+  --panel-border: rgba(0, 0, 0, 0.06);
 }
 
 .dark {
-  --app-bg: #141413;
-  --glass-bg: rgba(22, 21, 19, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-shadow: 0 6px 36px rgba(0, 0, 0, 0.35);
-  --glass-pill-bg: rgba(255, 255, 255, 0.11);
-  --glass-pill-shadow: 0 2px 8px rgba(0, 0, 0, 0.3),
+  --app-bg: #000000;
+  --glass-bg: rgba(28, 28, 30, 0.72);
+  --glass-border: transparent;
+  --glass-shadow: none;
+  --glass-pill-bg: rgba(255, 255, 255, 0.12);
+  --glass-pill-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
     0 0 0 0.5px rgba(255, 255, 255, 0.06);
-  --glass-text-active: #faf9f5;
-  --glass-text-inactive: rgba(250, 249, 245, 0.38);
-  --glass-hover-bg: rgba(255, 255, 255, 0.07);
+  --glass-text-active: #FFFFFF;
+  --glass-text-inactive: rgba(235, 235, 245, 0.4);
+  --glass-hover-bg: rgba(235, 235, 245, 0.06);
+  /* Content panels — dark solid surface */
+  --panel-bg: rgba(28, 28, 30, 0.96);
+  --panel-border: rgba(255, 255, 255, 0.08);
 }
 
 @layer utilities {

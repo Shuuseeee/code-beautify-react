@@ -270,6 +270,56 @@ export function registerServiceNowLanguage(monaco: typeof Monaco): void {
   });
 }
 
+// ─── Glass themes (transparent background for glassmorphism panels) ────────
+
+export function registerGlassThemes(monaco: typeof Monaco): void {
+  const lightColors: Record<string, string> = {
+    "editor.background":                 "#00000000",
+    "editorGutter.background":           "#00000000",
+    "editor.lineHighlightBackground":    "#00000008",
+    "editorLineNumber.foreground":       "#8E8E9370",
+    "editorLineNumber.activeForeground": "#8E8E93",
+    "editor.selectionBackground":        "#007AFF2A",
+    "editor.inactiveSelectionBackground":"#007AFF16",
+  };
+  const darkColors: Record<string, string> = {
+    "editor.background":                 "#00000000",
+    "editorGutter.background":           "#00000000",
+    "editor.lineHighlightBackground":    "#ffffff09",
+    "editorLineNumber.foreground":       "#ffffff28",
+    "editorLineNumber.activeForeground": "#ffffff55",
+    "editor.selectionBackground":        "#007AFF40",
+    "editor.inactiveSelectionBackground":"#007AFF22",
+  };
+
+  monaco.editor.defineTheme("glass-light", {
+    base: "vs", inherit: true, rules: [], colors: lightColors,
+  });
+  monaco.editor.defineTheme("glass-dark", {
+    base: "vs-dark", inherit: true, rules: [], colors: darkColors,
+  });
+  monaco.editor.defineTheme("glass-snow-light", {
+    base: "vs", inherit: true,
+    rules: [
+      { token: "snow-class",  foreground: "C25D00", fontStyle: "bold" },
+      { token: "snow-global", foreground: "6B21A8", fontStyle: "bold" },
+      { token: "comment.doc", foreground: "5C8A5C", fontStyle: "italic" },
+      { token: "annotation",  foreground: "888800" },
+    ],
+    colors: lightColors,
+  });
+  monaco.editor.defineTheme("glass-snow-dark", {
+    base: "vs-dark", inherit: true,
+    rules: [
+      { token: "snow-class",  foreground: "FF9D4D", fontStyle: "bold" },
+      { token: "snow-global", foreground: "C084FC", fontStyle: "bold" },
+      { token: "comment.doc", foreground: "6A9955", fontStyle: "italic" },
+      { token: "annotation",  foreground: "DCDCAA" },
+    ],
+    colors: darkColors,
+  });
+}
+
 // ─── Auto-detection ────────────────────────────────────────────────────────
 
 const SNOW_DETECTION_PATTERNS = [

@@ -7,18 +7,19 @@ const config: Config = {
     extend: {
       colors: {
         anthro: {
-          light: "#faf9f5",
-          dark: "#141413",
-          mid: "#b0aea5",
-          border: "#e8e6dc",
-          surface: "#1c1b19",
-          "dark-border": "#2a2927",
-          orange: "#d97757",
-          "orange-hover": "#c86945",
-          "orange-subtle": "#f5ebe6",
-          blue: "#6a9bcc",
-          "blue-subtle": "#e8f0f8",
-          green: "#788c5d",
+          // iOS system colors
+          light: "#FFFFFF",           // systemBackground (light)
+          dark: "#000000",            // label (light) / systemBackground (dark)
+          mid: "#8E8E93",             // systemGray
+          border: "#D1D1D6",          // separator (light)
+          surface: "#1C1C1E",         // secondarySystemBackground (dark)
+          "dark-border": "#3A3A3C",   // separator (dark)
+          orange: "#FF9500",          // systemOrange
+          "orange-hover": "#E68600",
+          "orange-subtle": "#FFF3E0",
+          blue: "#007AFF",            // systemBlue
+          "blue-subtle": "#E5F0FF",
+          green: "#34C759",           // systemGreen
         },
       },
       fontFamily: {

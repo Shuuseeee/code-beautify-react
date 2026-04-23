@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import OfflineBanner from "@/components/OfflineBanner";
 import OnboardingModal from "@/components/OnboardingModal";
-import { useTheme } from "@/hooks/useTheme";
+import { ThemeProvider, useThemeContext } from "@/hooks/ThemeContext";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const ONBOARDING_KEY = "cb_onboarded_v1";
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  const { theme, toggleTheme } = useTheme();
+function ClientLayoutInner({ children }: { children: React.ReactNode }) {
+  const { theme, toggleTheme } = useThemeContext();
   const isOnline = useOnlineStatus();
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -35,5 +35,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         {children}
       </div>
     </>
+  );
+}
+
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider>
+      <ClientLayoutInner>{children}</ClientLayoutInner>
+    </ThemeProvider>
   );
 }

@@ -61,12 +61,12 @@ export default function DiffModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-8 bg-anthro-dark/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-anthro-dark/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-2xl shadow-2xl w-full max-w-5xl flex flex-col overflow-hidden"
-        style={{ height: "calc(100vh - 4rem)" }}
+        className="bg-white dark:bg-anthro-surface border border-anthro-border dark:border-anthro-dark-border rounded-2xl shadow-2xl w-full flex flex-col overflow-hidden"
+        style={{ maxWidth: "min(96vw, 1600px)", height: "calc(100vh - 3rem)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

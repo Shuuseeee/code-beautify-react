@@ -66,13 +66,6 @@ export default function ModeSelector({ mode, detectedLang, onChange, theme }: Mo
     <div className="flex justify-center overflow-x-auto px-3 md:px-0 scrollbar-none">
       <div
         className="relative inline-flex items-center p-1 rounded-2xl select-none shrink-0"
-        style={{
-          background: "var(--glass-bg)",
-          backdropFilter: "blur(28px) saturate(200%)",
-          WebkitBackdropFilter: "blur(28px) saturate(200%)",
-          border: "1px solid var(--glass-border)",
-          boxShadow: "var(--glass-shadow)",
-        }}
       >
         {/* Sliding glass pill — colored tint when a language is active */}
         {pill && (
