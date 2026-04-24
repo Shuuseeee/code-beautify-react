@@ -12,7 +12,7 @@
 
   body {
     @apply text-anthro-dark dark:text-anthro-light;
-    font-family: "Poppins", Arial, sans-serif;
+    font-family: "Poppins", "Segoe UI", Arial, sans-serif;
     background: var(--app-bg);
     background-attachment: fixed;
   }

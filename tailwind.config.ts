@@ -23,7 +23,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heading: ["Poppins", "Arial", "sans-serif"],
+        heading: ["Poppins", "Segoe UI", "Arial", "sans-serif"],
         body: ["Lora", "Georgia", "serif"],
         mono: ["'JetBrains Mono'", "'Fira Code'", "Consolas", "monospace"],
       },
