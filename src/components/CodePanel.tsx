@@ -163,7 +163,7 @@ export default function CodePanel({
           onMount={handleMount}
           options={{
             readOnly,
-            "bracketPairColorization.enabled": true,
+            "bracketPairColorization.enabled": true as unknown,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
             fontSize: 12,

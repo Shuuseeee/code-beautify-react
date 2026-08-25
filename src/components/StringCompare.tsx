@@ -199,10 +199,6 @@ Bought a bit of better butter.`;
 const SS_LEFT  = "compare-left";
 const SS_RIGHT = "compare-right";
 
-function ssGet(key: string, fallback: string): string {
-  if (typeof window === "undefined") return fallback;
-  return sessionStorage.getItem(key) ?? fallback;
-}
 
 export default function StringCompare() {
   const { t } = useI18n();
