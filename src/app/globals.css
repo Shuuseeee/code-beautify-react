@@ -1,0 +1,268 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Cabin:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Design tokens — Pierre / diffs.com visual language
+   ───────────────────────────────────────────────────────────────────────────
+   Principles carried over from @pierre/diffs:
+     · Changed lines are marked by a 2px edge bar, not a full-bleed color wash.
+     · Row tint is a whisper; inline token marks carry the saturation.
+     · Hairline borders, small radii, no glassmorphism, no drop shadows
+       except a single hairline-offset for popovers.
+     · Monospace is a first-class citizen with ligatures disabled so that
+       columns never shift between the two sides of a diff.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Surfaces — neutral-0 / neutral-1 / neutral-2 from Coral */
+  --bg:            #F7F8F8;
+  --surface:       #FFFFFF;
+  --surface-sunk:  #F2F4F4;
+  --surface-raise: #FFFFFF;
+
+  /* Lines */
+  --border:        rgba(16, 23, 26, 0.10);
+  --border-soft:   rgba(16, 23, 26, 0.055);
+
+  /* Text — neutral-18 (#10171A) as primary text from Coral */
+  --fg:            #10171A;
+  --fg-muted:      #6B7A80;
+  --fg-faint:      #9BAAB0;
+
+  /* Interaction */
+  --hover:         rgba(16, 23, 26, 0.045);
+  --active:        rgba(16, 23, 26, 0.075);
+  /* focus-ring → now-color--focus-2: rgb(36,138,19) */
+  --focus:         #248A13;
+
+  /* Accent — Coral primary-1: rgb(0,128,163) = #00809B (teal/cyan-blue) */
+  --accent:        #00809B;
+  --accent-hover:  #00566E;
+  --accent-fg:     #FFFFFF;
+  --accent-wash:   rgba(0, 128, 163, 0.10);
+
+  /* Semantic — from Coral critical/positive/warning tokens */
+  --danger:        #C00000;
+  --danger-wash:   rgba(192, 0, 0, 0.09);
+  --success:       #248A13;
+  --success-wash:  rgba(36, 138, 19, 0.10);
+  --warn:          #996200;
+
+  /* ── Diff ────────────────────────────────────────────────────────────────
+     bar    → 2px edge marker on the changed row
+     line   → whole-row tint (deliberately near-invisible)
+     token  → inline character/word level mark (carries the signal)
+     num    → line-number column tint                                       */
+  --diff-add-bar:    #248A13;
+  --diff-add-line:   rgba(36, 138, 19, 0.070);
+  --diff-add-token:  rgba(36, 138, 19, 0.260);
+  --diff-add-num:    rgba(36, 138, 19, 0.115);
+  --diff-add-fg:     #1A6A0E;
+
+  --diff-del-bar:    #C00000;
+  --diff-del-line:   rgba(192, 0, 0, 0.062);
+  --diff-del-token:  rgba(192, 0, 0, 0.220);
+  --diff-del-num:    rgba(192, 0, 0, 0.105);
+  --diff-del-fg:     #800000;
+
+  --diff-gutter-fg:  rgba(16, 23, 26, 0.28);
+  --diff-void:       rgba(16, 23, 26, 0.018);
+
+  /* Shape — from Coral Shape and Form tokens:
+     --now-actionable--border-radius: 6px (buttons)
+     --now-container--border-radius:  4px (containers/cards)
+     --now-window--border-radius:    12px (modals)              */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 12px;
+
+  --shadow-pop: 0 0 0 1px var(--border), 0 8px 24px -8px rgba(16, 23, 26, 0.14);
+}
+
+.dark {
+  --bg:            #0A0F10;
+  --surface:       #111618;
+  --surface-sunk:  #0D1214;
+  --surface-raise: #182022;
+
+  --border:        rgba(255, 255, 255, 0.095);
+  --border-soft:   rgba(255, 255, 255, 0.055);
+
+  --fg:            #E2EAEC;
+  --fg-muted:      #8BAAB5;
+  --fg-faint:      #5E7A84;
+
+  --hover:         rgba(255, 255, 255, 0.055);
+  --active:        rgba(255, 255, 255, 0.085);
+  /* focus-ring 暗色模式下用亮绿色 */
+  --focus:         #86B081;
+
+  /* 暗色模式 accent 用亮版青色，确保对比度 */
+  --accent:        #3AB4CC;
+  --accent-hover:  #56C8E0;
+  --accent-fg:     #02202A;
+  --accent-wash:   rgba(58, 180, 204, 0.14);
+
+  --danger:        #E87070;
+  --danger-wash:   rgba(232, 112, 112, 0.13);
+  --success:       #86B481;
+  --success-wash:  rgba(134, 180, 129, 0.13);
+  --warn:          #D4A017;
+
+  --diff-add-bar:    #86B481;
+  --diff-add-line:   rgba(134, 180, 129, 0.085);
+  --diff-add-token:  rgba(134, 180, 129, 0.280);
+  --diff-add-num:    rgba(134, 180, 129, 0.140);
+  --diff-add-fg:     #A8D4A4;
+
+  --diff-del-bar:    #E87070;
+  --diff-del-line:   rgba(232, 112, 112, 0.080);
+  --diff-del-token:  rgba(232, 112, 112, 0.260);
+  --diff-del-num:    rgba(232, 112, 112, 0.130);
+  --diff-del-fg:     #F4A8A8;
+
+  --diff-gutter-fg:  rgba(255, 255, 255, 0.26);
+  --diff-void:       rgba(255, 255, 255, 0.016);
+
+  --shadow-pop: 0 0 0 1px var(--border), 0 8px 24px -8px rgba(0, 0, 0, 0.65);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Lato", Arial, sans-serif;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Ligatures off: `=>` and `!==` must occupy the same column count on both
+     sides of a diff or the eye loses the alignment. */
+  code, pre, kbd, textarea, .mono {
+    font-family: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, monospace;
+    font-feature-settings: "calt" 0, "liga" 0, "tnum" 1;
+    font-variant-ligatures: none;
+  }
+
+  ::selection {
+    background: var(--accent-wash);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+    border-radius: 3px;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 10px; height: 10px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 99px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background-color: var(--fg-faint); background-clip: content-box; }
+
+}
+
+/* ── The diff surface ──────────────────────────────────────────────────────
+   Grid columns: [ln-left] [ln-right] [sign] [code]
+   The edge bar is drawn with an inset box-shadow on the sign cell so that it
+   hugs the code column without adding a layout box.                        */
+.diff-grid {
+  display: grid;
+  grid-template-columns: auto auto 1.35rem minmax(0, 1fr);
+  font-size: 12px;
+  line-height: 1.5rem;
+  width: 100%;
+}
+.diff-grid--split {
+  grid-template-columns:
+    auto 1.35rem minmax(0, 1fr)
+    auto 1.35rem minmax(0, 1fr);
+}
+
+.diff-num {
+  padding: 0 0.65rem;
+  text-align: right;
+  color: var(--diff-gutter-fg);
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.diff-sign {
+  text-align: center;
+  user-select: none;
+  font-weight: 700;
+  position: relative;
+}
+.diff-sign::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: transparent;
+}
+.diff-row--add .diff-sign::before { background: var(--diff-add-bar); }
+.diff-row--del .diff-sign::before { background: var(--diff-del-bar); }
+
+.diff-code {
+  padding: 0 0.85rem 0 0.5rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.diff-row--add .diff-code, .diff-row--add .diff-sign { background: var(--diff-add-line); }
+.diff-row--del .diff-code, .diff-row--del .diff-sign { background: var(--diff-del-line); }
+.diff-row--add .diff-num { background: var(--diff-add-num); color: var(--diff-add-fg); }
+.diff-row--del .diff-num { background: var(--diff-del-num); color: var(--diff-del-fg); }
+.diff-row--void .diff-code,
+.diff-row--void .diff-sign,
+.diff-row--void .diff-num { background: var(--diff-void); }
+
+.diff-row--add .diff-sign { color: var(--diff-add-bar); }
+.diff-row--del .diff-sign { color: var(--diff-del-bar); }
+
+/* Inline token marks — this is where the saturation lives */
+.diff-tok {
+  border-radius: 2px;
+  padding: 1px 0;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.diff-tok--add { background: var(--diff-add-token); }
+.diff-tok--del { background: var(--diff-del-token); }
+
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
