@@ -163,7 +163,7 @@ export default function DiffModal({
               fontFamily: EDITOR_FONT_FAMILY,
               fontLigatures: false,
               renderSideBySide: true,
-              renderOverviewRuler: false,
+              renderOverviewRuler: true,
               minimap: { enabled: false },
               scrollBeyondLastLine: false,
               lineNumbersMinChars: 3,
