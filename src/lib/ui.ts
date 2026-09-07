@@ -80,7 +80,7 @@ export const segment =
   "inline-flex items-center gap-0.5";
 
 export const segmentItem = (active: boolean) =>
-  `relative px-3 h-9 text-sm font-semibold ${press} ` +
+  `relative inline-flex items-center px-3 h-9 text-sm font-semibold ${press} ` +
   (active
-    ? "text-accent after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-accent after:rounded-full"
+    ? "text-accent"
     : "text-fg-faint hover:text-fg-muted hover:bg-hover rounded-md");

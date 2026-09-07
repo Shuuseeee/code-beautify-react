@@ -1,15 +1,18 @@
 "use client";
 
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { Sun, Moon, ChevronDown, CircleHelp, Check } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
-import { btnIcon, popover, popoverItem, press } from "@/lib/ui";
+import { btnIcon, popover, popoverItem, press, segment, segmentItem } from "@/lib/ui";
 import { useChevronAnimation } from "@/hooks/useChevronAnimation";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
+
+gsap.registerPlugin(useGSAP);
 
 const NAV_LINKS = [
   { href: "/" as const, labelKey: "navBeautify" as const },
@@ -38,6 +41,10 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const pathname = usePathname();
   const chevronRef = useChevronAnimation(open);
 
+  const navRef = useRef<HTMLElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+
   useIsomorphicLayoutEffect(() => {
     if (open && popoverRef.current) {
       const ctx = gsap.context(() => {
@@ -49,6 +56,27 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
       return () => ctx.revert();
     }
   }, [open]);
+
+  useGSAP(() => {
+    const activeIndex = NAV_LINKS.findIndex(({ href }) => href === pathname);
+    const activeTab = tabRefs.current[activeIndex];
+    const indicator = indicatorRef.current;
+    const nav = navRef.current;
+    if (!activeTab || !indicator || !nav) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    const x = tabRect.left - navRect.left;
+    const w = tabRect.width;
+
+    const isFirst = indicator.dataset.initialized !== "true";
+    if (isFirst) {
+      gsap.set(indicator, { x, width: w });
+      indicator.dataset.initialized = "true";
+    } else {
+      gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+    }
+  }, { scope: navRef, dependencies: [pathname] });
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -74,30 +102,27 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
             </span>
           </div>
 
-          <nav className="flex items-stretch gap-1 -mb-px">
-            {NAV_LINKS.map(({ href, labelKey }) => {
+          <nav ref={navRef} className={`relative flex items-center ${segment}`}>
+            {NAV_LINKS.map(({ href, labelKey }, i) => {
               const active = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
+                  ref={(el) => { tabRefs.current[i] = el; }}
                   aria-current={active ? "page" : undefined}
-                  className={`relative flex items-center px-2 text-base ${press} ${
-                    active
-                      ? "text-fg font-medium"
-                      : "text-fg-faint hover:text-fg-muted"
-                  }`}
+                  className={segmentItem(active)}
                 >
                   {t(labelKey)}
-                  <span
-                    aria-hidden
-                    className={`absolute inset-x-0 -bottom-px h-[2px] ${
-  active ? "bg-fg" : "bg-transparent"
-}`}
-                  />
                 </Link>
               );
             })}
+            {/* GSAP-driven sliding indicator */}
+            <div
+              ref={indicatorRef}
+              aria-hidden
+              className="absolute bottom-0 h-[2px] bg-accent rounded-full pointer-events-none"
+            />
           </nav>
         </div>
 
