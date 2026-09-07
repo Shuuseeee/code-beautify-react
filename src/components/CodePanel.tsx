@@ -196,7 +196,7 @@ export default function CodePanel({
             tabCompletion: "off",
             wordBasedSuggestions: "off",
             renderWhitespace: "none",
-            folding: false,
+            folding: true,
             smoothScrolling: true,
             cursorBlinking: "smooth",
           }}

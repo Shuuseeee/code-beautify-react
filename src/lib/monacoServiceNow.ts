@@ -303,6 +303,9 @@ export function registerEditorThemes(monaco: typeof Monaco): void {
     "scrollbarSlider.activeBackground":   "#10171A47",
     "editorBracketMatch.background":      "#00809B1F",
     "editorBracketMatch.border":          "#00000000",
+    "editor.foldBackground":              "#FFFFFF",
+    "editorStickyScroll.background":      "#FFFFFF",
+    "editorStickyScrollHover.background": "#F2F4F4",
   };
 
   const darkColors: Record<string, string> = {
@@ -324,6 +327,9 @@ export function registerEditorThemes(monaco: typeof Monaco): void {
     "scrollbarSlider.activeBackground":   "#FFFFFF42",
     "editorBracketMatch.background":      "#3AB4CC29",
     "editorBracketMatch.border":          "#00000000",
+    "editor.foldBackground":              "#111618",
+    "editorStickyScroll.background":      "#111618",
+    "editorStickyScrollHover.background": "#182022",
   };
 
   // Diff-editor specific colors: the same restraint as the CSS diff surface —
