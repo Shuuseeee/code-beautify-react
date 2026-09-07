@@ -57,6 +57,20 @@ export const eyebrow =
 
 export const meta = "text-2xs font-mono text-fg-faint tabular-nums";
 
+/**
+ * Monospace stack for the Monaco editors, matching SN-Utils.
+ * Consolas leads deliberately: its slashed zero stays distinct from `8` at
+ * small sizes, where JetBrains Mono's dotted zero does not. Any DOM overlay
+ * drawn on top of an editor (placeholders) must use this same stack, or the
+ * differing advance widths make the text sit off the real glyph positions.
+ */
+export const EDITOR_FONT_FAMILY =
+  "Consolas, 'SF Mono', Menlo, 'JetBrains Mono', monospace";
+
+/** Editor font metrics, shared so the overlays cannot drift from the editor. */
+export const EDITOR_FONT_SIZE = 14;
+export const EDITOR_LINE_HEIGHT = 21;
+
 export const kbd =
   "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-[4px] " +
   "border border-line bg-surface-sunk text-2xs font-mono text-fg-muted";

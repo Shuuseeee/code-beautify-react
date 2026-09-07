@@ -11,7 +11,10 @@ import {
   registerGlassThemes,
   isServiceNowCode,
 } from "@/lib/monacoServiceNow";
-import { panel, panelHeader, eyebrow, meta, btnIcon, btnIconDanger, press } from "@/lib/ui";
+import {
+  panel, panelHeader, eyebrow, meta, btnIcon, btnIconDanger, press,
+  EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
+} from "@/lib/ui";
 import { langDot } from "@/lib/langColors";
 
 const MonacoEditor = dynamic(
@@ -165,9 +168,9 @@ export default function CodePanel({
             readOnly,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
-            fontSize: 12,
-            lineHeight: 20,
-            fontFamily: "'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, monospace",
+            fontSize: EDITOR_FONT_SIZE,
+            lineHeight: EDITOR_LINE_HEIGHT,
+            fontFamily: EDITOR_FONT_FAMILY,
             fontLigatures: false,
             lineNumbers: "on",
             lineNumbersMinChars: 3,
@@ -201,7 +204,14 @@ export default function CodePanel({
         />
 
         {!value && placeholder && (
-          <div className="absolute top-[10px] left-[52px] right-4 pointer-events-none select-none text-sm text-fg-faint font-mono">
+          <div
+            className="absolute top-[10px] left-[52px] right-4 pointer-events-none select-none text-fg-faint"
+            style={{
+              fontFamily: EDITOR_FONT_FAMILY,
+              fontSize: EDITOR_FONT_SIZE,
+              lineHeight: `${EDITOR_LINE_HEIGHT}px`,
+            }}
+          >
             {placeholder}
           </div>
         )}

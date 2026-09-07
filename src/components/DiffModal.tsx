@@ -11,7 +11,10 @@ import {
   registerEditorThemes,
   isServiceNowCode,
 } from "@/lib/monacoServiceNow";
-import { btnIcon, btnSecondary, eyebrow } from "@/lib/ui";
+import {
+  btnIcon, btnSecondary, eyebrow,
+  EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
+} from "@/lib/ui";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useGsapReducedMotion } from "@/hooks/useGsapReducedMotion";
 
@@ -155,9 +158,9 @@ export default function DiffModal({
             options={{
               readOnly: true,
               automaticLayout: true,
-              fontSize: 12,
-              lineHeight: 20,
-              fontFamily: "'JetBrains Mono', 'SF Mono', 'Fira Code', Consolas, monospace",
+              fontSize: EDITOR_FONT_SIZE,
+              lineHeight: EDITOR_LINE_HEIGHT,
+              fontFamily: EDITOR_FONT_FAMILY,
               fontLigatures: false,
               renderSideBySide: true,
               renderOverviewRuler: false,
