@@ -69,8 +69,10 @@ export default function ActionPanel({
   const morePopoverRef      = useRef<HTMLDivElement>(null);
   const mobileMoreRef       = useRef<HTMLDivElement>(null);
 
+  const uncommentChevronRef    = useChevronAnimation(uncommentOpen);
   const moreChevronRef         = useChevronAnimation(moreOpen);
   const historyChevronDesktop  = useChevronAnimation(historyOpen);
+  const historyChevronMobile   = useChevronAnimation(historyOpen);
 
   useIsomorphicLayoutEffect(() => {
     if (uncommentOpen && uncommentPopoverRef.current) {
@@ -260,9 +262,10 @@ export default function ActionPanel({
                   <span className="text-2xs font-mono text-fg-faint">{history.length}</span>
                 )}
                 <ChevronDown
+                  ref={historyChevronMobile}
                   size={12}
                   strokeWidth={2}
-                  className={`text-fg-faint transition-transform duration-150 ${historyOpen ? "rotate-180" : ""}`}
+                  className="text-fg-faint"
                 />
               </span>
             </button>
@@ -314,9 +317,16 @@ export default function ActionPanel({
         <div className="h-px bg-line my-1.5" />
 
         {/* Remove comments */}
-        <div className="relative" onMouseEnter={openUncomment} onMouseLeave={closeUncomment}>
+        <div
+          className="relative"
+          onMouseEnter={openUncomment}
+          onMouseLeave={closeUncomment}
+          onKeyDown={(e) => { if (e.key === "Escape") setUncommentOpen(false); }}
+        >
           <button
             type="button"
+            onClick={() => setUncommentOpen((v) => !v)}
+            aria-haspopup="menu"
             aria-expanded={uncommentOpen}
             className={`${btnSecondary} ${wide} ${uncommentDone ? "text-success" : ""}`}
           >
@@ -324,7 +334,12 @@ export default function ActionPanel({
               <UcIcon size={14} strokeWidth={1.75} />
               {t("removeComments")}
             </span>
-            <ChevronDown size={12} strokeWidth={2} className="text-fg-faint" />
+            <ChevronDown
+              ref={uncommentChevronRef}
+              size={12}
+              strokeWidth={2}
+              className="text-fg-faint"
+            />
           </button>
 
           {uncommentOpen && (
@@ -348,8 +363,18 @@ export default function ActionPanel({
         </div>
 
         {/* More */}
-        <div onMouseEnter={openMore} onMouseLeave={closeMore}>
-          <button type="button" aria-expanded={moreOpen} className={`${btnSecondary} ${wide}`}>
+        <div
+          onMouseEnter={openMore}
+          onMouseLeave={closeMore}
+          onKeyDown={(e) => { if (e.key === "Escape") { setMoreOpen(false); setHistoryOpen(false); } }}
+        >
+          <button
+            type="button"
+            onClick={() => setMoreOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
+            className={`${btnSecondary} ${wide}`}
+          >
             <span className="flex items-center gap-2">
               <MoreHorizontal size={14} strokeWidth={1.75} />
               {t("more")}

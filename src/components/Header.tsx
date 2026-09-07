@@ -120,6 +120,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setOpen((v) => !v)}
+              aria-haspopup="menu"
               aria-expanded={open}
               className={`inline-flex items-center gap-1 h-7 px-2 rounded-sm text-base text-fg-muted hover:text-fg hover:bg-hover ${press}`}
             >
