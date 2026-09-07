@@ -64,19 +64,34 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
     const nav = navRef.current;
     if (!activeTab || !indicator || !nav) return;
 
-    const navRect = nav.getBoundingClientRect();
-    const tabRect = activeTab.getBoundingClientRect();
-    const x = tabRect.left - navRect.left;
-    const w = tabRect.width;
+    const measure = (animate: boolean) => {
+      const navRect = nav.getBoundingClientRect();
+      const tabRect = activeTab.getBoundingClientRect();
+      const x = tabRect.left - navRect.left;
+      const w = tabRect.width;
+      if (animate) {
+        gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+      } else {
+        gsap.set(indicator, { x, width: w });
+      }
+    };
 
     const isFirst = indicator.dataset.initialized !== "true";
     if (isFirst) {
-      gsap.set(indicator, { x, width: w });
-      indicator.dataset.initialized = "true";
+      // Wait for fonts so tab widths are stable before measuring
+      document.fonts.ready.then(() => {
+        measure(false);
+        indicator.dataset.initialized = "true";
+        indicator.dataset.locale = locale;
+      });
+    } else if (indicator.dataset.locale !== locale) {
+      // Locale changed — re-measure without animation
+      measure(false);
+      indicator.dataset.locale = locale;
     } else {
-      gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+      measure(true);
     }
-  }, { scope: navRef, dependencies: [pathname] });
+  }, { scope: navRef, dependencies: [pathname, locale] });
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

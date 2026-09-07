@@ -27,7 +27,7 @@ const MODES: { value: Mode; label: string }[] = [
 ];
 
 export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelectorProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const tablistRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
@@ -51,19 +51,33 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
     const tablist = tablistRef.current;
     if (!activeTab || !indicator || !tablist) return;
 
-    const listRect = tablist.getBoundingClientRect();
-    const tabRect = activeTab.getBoundingClientRect();
-    const x = tabRect.left - listRect.left;
-    const w = tabRect.width;
+    const measure = (animate: boolean) => {
+      const listRect = tablist.getBoundingClientRect();
+      const tabRect = activeTab.getBoundingClientRect();
+      const x = tabRect.left - listRect.left;
+      const w = tabRect.width;
+      if (animate) {
+        gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+      } else {
+        gsap.set(indicator, { x, width: w });
+      }
+    };
 
     const isFirst = indicator.dataset.initialized !== "true";
     if (isFirst) {
-      gsap.set(indicator, { x, width: w });
-      indicator.dataset.initialized = "true";
+      // Wait for fonts before initial placement so width is stable
+      document.fonts.ready.then(() => {
+        measure(false);
+        indicator.dataset.initialized = "true";
+      });
+    } else if (indicator.dataset.locale !== locale) {
+      // Locale changed — tab label widths shifted, re-measure without animation
+      measure(false);
+      indicator.dataset.locale = locale;
     } else {
-      gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+      measure(true);
     }
-  }, { scope: tablistRef, dependencies: [activeIndex] });
+  }, { scope: tablistRef, dependencies: [activeIndex, locale] });
 
   return (
     <div className="flex items-center justify-between gap-3">
