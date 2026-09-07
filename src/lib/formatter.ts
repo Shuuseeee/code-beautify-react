@@ -46,9 +46,14 @@ export function formatCode(code: string, type: DetectedLang): string {
 }
 
 export function removeHtmlComments(code: string): string {
-  return code.replace(/<!--[\s\S]*?-->/g, "").replace(/^\s*[\r\n]/gm, "");
+  const normalized = code.replace(/\r\n/g, "\n");
+  return normalized.replace(/<!--[\s\S]*?-->/g, "").replace(/^\s*\n/gm, "");
 }
 
 export function removeJsComments(code: string): string {
-  return code.replace(/\/\*[\s\S]*?\*\/|\/\/.*(?=\n|$)/g, "").replace(/^\s*[\r\n]/gm, "");
+  const normalized = code.replace(/\r\n/g, "\n");
+  return normalized
+    .replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, "")
+    .replace(/[ \t]+$/gm, "")
+    .replace(/^\s*\n/gm, "");
 }
