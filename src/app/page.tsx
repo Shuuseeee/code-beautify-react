@@ -11,7 +11,6 @@ import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 import { useShakeAnimation } from "@/hooks/useShakeAnimation";
 import { useMonaco } from "@monaco-editor/react";
-import { isServiceNowCode } from "@/lib/monacoServiceNow";
 
 export default function HomePage() {
   const { theme } = useThemeContext();
@@ -33,14 +32,10 @@ export default function HomePage() {
   }, [shakeInput, triggerShake]);
 
   const monacoInstance = useMonaco();
-  const isSnow = isServiceNowCode(input) || isServiceNowCode(output);
   useEffect(() => {
     if (!monacoInstance) return;
-    const themeName = isSnow
-      ? (theme === "dark" ? "pierre-snow-dark" : "pierre-snow-light")
-      : (theme === "dark" ? "pierre-dark" : "pierre-light");
-    monacoInstance.editor.setTheme(themeName);
-  }, [monacoInstance, theme, isSnow]);
+    monacoInstance.editor.setTheme(theme === "dark" ? "pierre-dark" : "pierre-light");
+  }, [monacoInstance, theme]);
 
   return (
     <>

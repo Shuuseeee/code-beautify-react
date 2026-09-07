@@ -2,15 +2,16 @@
 
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { X, Columns2, Rows2, ArrowLeftRight } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 import dynamic from "next/dynamic";
+import type * as Monaco from "monaco-editor";
 import type { Theme } from "@/hooks/useTheme";
 import {
-  registerServiceNowLanguage,
   registerEditorThemes,
   isServiceNowCode,
 } from "@/lib/monacoServiceNow";
+import { registerServiceNowTypes } from "@/lib/servicenowTypes";
 import {
   btnIcon, btnSecondary, eyebrow,
   EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
@@ -49,6 +50,8 @@ export default function DiffModal({
 }: DiffModalProps) {
   const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(open);
+  const [sideBySide, setSideBySide] = useState(true);
+  const [swapped, setSwapped] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const { reducedMotion } = useGsapReducedMotion();
@@ -62,7 +65,10 @@ export default function DiffModal({
   }, [open, onClose]);
 
   useEffect(() => {
-    if (open) setIsVisible(true);
+    if (open) {
+      setIsVisible(true);
+      setSwapped(false); // reset swap each time the modal reopens
+    }
   }, [open]);
 
   useIsomorphicLayoutEffect(() => {
@@ -94,14 +100,16 @@ export default function DiffModal({
 
   const isSnow = isServiceNowCode(original) || isServiceNowCode(modified);
   const monacoLang = isSnow
-    ? "servicenow"
+    ? "javascript"
     : language === "html" ? "html"
     : language === "css"  ? "css"
     : language === "json" ? "json"
     : "javascript";
-  const monacoTheme = isSnow
-    ? (theme === "dark" ? "pierre-snow-dark" : "pierre-snow-light")
-    : (theme === "dark" ? "pierre-dark" : "pierre-light");
+  const monacoTheme = theme === "dark" ? "pierre-dark" : "pierre-light";
+
+  // Swap flips which side is original vs. modified (and the header legend).
+  const leftText = swapped ? modified : original;
+  const rightText = swapped ? original : modified;
 
   return (
     <div
@@ -132,13 +140,31 @@ export default function DiffModal({
             <div className="hidden sm:flex items-center gap-3">
               <span className={`${eyebrow} flex items-center gap-1.5`}>
                 <span aria-hidden className="h-[7px] w-[7px] rounded-[2px] bg-diff-del" />
-                {t("input")}
+                {swapped ? t("output") : t("input")}
               </span>
               <span className={`${eyebrow} flex items-center gap-1.5`}>
                 <span aria-hidden className="h-[7px] w-[7px] rounded-[2px] bg-diff-add" />
-                {t("output")}
+                {swapped ? t("input") : t("output")}
               </span>
             </div>
+            <button
+              onClick={() => setSwapped((s) => !s)}
+              className={btnIcon}
+              title={t("swapSides")}
+              aria-label={t("swapSides")}
+            >
+              <ArrowLeftRight size={15} strokeWidth={1.75} />
+            </button>
+            <button
+              onClick={() => setSideBySide((s) => !s)}
+              className={btnIcon}
+              title={sideBySide ? t("inlineView") : t("sideBySideView")}
+              aria-label={sideBySide ? t("inlineView") : t("sideBySideView")}
+            >
+              {sideBySide
+                ? <Rows2 size={15} strokeWidth={1.75} />
+                : <Columns2 size={15} strokeWidth={1.75} />}
+            </button>
             <button onClick={onClose} className={btnIcon} aria-label={t("close")}>
               <X size={15} strokeWidth={1.75} />
             </button>
@@ -147,12 +173,12 @@ export default function DiffModal({
 
         <div className="flex-1 min-h-0">
           <MonacoDiffEditor
-            original={original}
-            modified={modified}
+            original={leftText}
+            modified={rightText}
             language={monacoLang}
             theme={monacoTheme}
             beforeMount={(monaco) => {
-              registerServiceNowLanguage(monaco);
+              registerServiceNowTypes(monaco);
               registerEditorThemes(monaco);
             }}
             options={{
@@ -162,7 +188,7 @@ export default function DiffModal({
               lineHeight: EDITOR_LINE_HEIGHT,
               fontFamily: EDITOR_FONT_FAMILY,
               fontLigatures: false,
-              renderSideBySide: true,
+              renderSideBySide: sideBySide,
               renderOverviewRuler: true,
               minimap: { enabled: false },
               scrollBeyondLastLine: false,
@@ -171,11 +197,13 @@ export default function DiffModal({
               padding: { top: 8, bottom: 12 },
               renderIndicators: true,
               diffWordWrap: "on",
+              "semanticHighlighting.enabled": true,
+              bracketPairColorization: { enabled: true },
               scrollbar: {
                 verticalScrollbarSize: 10,
                 horizontalScrollbarSize: 10,
               },
-            }}
+            } as Monaco.editor.IDiffEditorConstructionOptions}
             height="100%"
           />
         </div>

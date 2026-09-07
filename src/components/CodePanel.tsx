@@ -7,10 +7,11 @@ import dynamic from "next/dynamic";
 import type * as Monaco from "monaco-editor";
 import { useMonaco } from "@monaco-editor/react";
 import {
-  registerServiceNowLanguage,
   registerGlassThemes,
+  registerJsonColorProvider,
   isServiceNowCode,
 } from "@/lib/monacoServiceNow";
+import { registerServiceNowTypes } from "@/lib/servicenowTypes";
 import {
   panel, panelHeader, eyebrow, meta, btnIcon, btnIconDanger, press,
   EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
@@ -50,6 +51,9 @@ export default function CodePanel({
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
+  // Set once the user picks a language from the right-click menu; from then on
+  // auto-detection stops overriding their choice.
+  const manualLangRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (scrollTopOnChange && editorRef.current) {
@@ -84,23 +88,73 @@ export default function CodePanel({
   const charCount = value.length;
 
   const isSnow = isServiceNowCode(value);
-  const monacoLang = isSnow ? "servicenow" : (language ?? "plaintext");
+  // ServiceNow code renders as plain javascript, colored by injected type defs
+  // (semantic highlighting). Auto-detection is skipped once the user manually
+  // picks a language from the context menu.
+  const monacoLang = isSnow ? "javascript" : (language ?? "plaintext");
 
   const monacoInstance = useMonaco();
 
   const handleBeforeMount = useCallback((monaco: typeof Monaco) => {
-    registerServiceNowLanguage(monaco);
+    registerServiceNowTypes(monaco);
+    registerJsonColorProvider(monaco);
     registerGlassThemes(monaco);
   }, []);
 
-  const handleMount = useCallback((editor: Monaco.editor.IStandaloneCodeEditor) => {
-    editorRef.current = editor;
-  }, []);
+  const handleMount = useCallback(
+    (editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
+      editorRef.current = editor;
+
+      // Right-click: search selection on Google.
+      editor.addAction({
+        id: "search-google",
+        label: "Search Google",
+        contextMenuGroupId: "9_cutcopypaste",
+        contextMenuOrder: 10,
+        precondition: "editorHasSelection",
+        run: (ed) => {
+          const sel = ed.getSelection();
+          const text = sel ? ed.getModel()?.getValueInRange(sel) : "";
+          if (text) {
+            window.open("https://www.google.com/search?q=" + encodeURIComponent(text));
+          }
+        },
+      });
+
+      // Right-click: manually set the editor language (locks out auto-detect).
+      const languages: { id: string; label: string; lang: string }[] = [
+        { id: "lang-javascript", label: "Set to JavaScript", lang: "javascript" },
+        { id: "lang-json", label: "Set to JSON", lang: "json" },
+        { id: "lang-html", label: "Set to HTML", lang: "html" },
+        { id: "lang-xml", label: "Set to XML", lang: "xml" },
+        { id: "lang-css", label: "Set to CSS", lang: "css" },
+        { id: "lang-graphql", label: "Set to GraphQL", lang: "graphql" },
+        { id: "lang-powershell", label: "Set to PowerShell", lang: "powershell" },
+        { id: "lang-plain", label: "Set to Plain text", lang: "plaintext" },
+      ];
+      languages.forEach(({ id, label, lang }, i) => {
+        editor.addAction({
+          id,
+          label,
+          contextMenuGroupId: "z_lang",
+          contextMenuOrder: i,
+          run: (ed) => {
+            const model = ed.getModel();
+            if (!model) return;
+            manualLangRef.current = lang;
+            monaco.editor.setModelLanguage(model, lang);
+          },
+        });
+      });
+    },
+    []
+  );
 
   // Sync language on the model whenever it changes after mount.
   // setModelLanguage targets only this panel's model, so two panels don't interfere.
   useEffect(() => {
     if (!monacoInstance) return;
+    if (manualLangRef.current) return; // user locked the language via the menu
     const model = editorRef.current?.getModel();
     if (model) monacoInstance.editor.setModelLanguage(model, monacoLang);
   }, [monacoInstance, monacoLang]);
@@ -188,7 +242,12 @@ export default function CodePanel({
               alwaysConsumeMouseWheel: false,
             },
             renderLineHighlight: "line",
-            contextmenu: false,
+            contextmenu: true,
+            colorDecorators: true,
+            "semanticHighlighting.enabled": true,
+            bracketPairColorization: { enabled: true },
+            formatOnType: true,
+            formatOnPaste: true,
             quickSuggestions: false,
             parameterHints: { enabled: false },
             suggestOnTriggerCharacters: false,
