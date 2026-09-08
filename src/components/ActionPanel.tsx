@@ -1,7 +1,7 @@
 "use client";
 
 import gsap from "gsap";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Wand2, GitCompare, Eraser, ChevronDown, FileCode, FileCode2,
   MessageSquareX, Loader2, Check, Link2, History, X, MoreHorizontal,
@@ -62,12 +62,25 @@ export default function ActionPanel({
   const [moreOpen,      setMoreOpen]      = useState(false);
   const [uncommentDone, setUncommentDone] = useState(false);
 
-  const uncommentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const moreTimer      = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const uncommentWrapRef    = useRef<HTMLDivElement>(null);
+  const moreWrapRef         = useRef<HTMLDivElement>(null);
   const uncommentPopoverRef = useRef<HTMLDivElement>(null);
   const morePopoverRef      = useRef<HTMLDivElement>(null);
   const mobileMoreRef       = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (uncommentWrapRef.current && !uncommentWrapRef.current.contains(e.target as Node)) {
+        setUncommentOpen(false);
+      }
+      if (moreWrapRef.current && !moreWrapRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+        setHistoryOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const uncommentChevronRef    = useChevronAnimation(uncommentOpen);
   const moreChevronRef         = useChevronAnimation(moreOpen);
@@ -109,11 +122,6 @@ export default function ActionPanel({
       return () => ctx.revert();
     }
   }, [moreOpen]);
-
-  const openUncomment  = () => { if (uncommentTimer.current) clearTimeout(uncommentTimer.current); setUncommentOpen(true); };
-  const closeUncomment = () => { uncommentTimer.current = setTimeout(() => setUncommentOpen(false), 120); };
-  const openMore       = () => { if (moreTimer.current) clearTimeout(moreTimer.current); setMoreOpen(true); };
-  const closeMore      = () => { moreTimer.current = setTimeout(() => { setMoreOpen(false); setHistoryOpen(false); }, 200); };
 
   const handleUncomment = (type: "html" | "js") => {
     onRemoveComments(type);
@@ -318,9 +326,8 @@ export default function ActionPanel({
 
         {/* Remove comments */}
         <div
+          ref={uncommentWrapRef}
           className="relative"
-          onMouseEnter={openUncomment}
-          onMouseLeave={closeUncomment}
           onKeyDown={(e) => { if (e.key === "Escape") setUncommentOpen(false); }}
         >
           <button
@@ -364,8 +371,7 @@ export default function ActionPanel({
 
         {/* More */}
         <div
-          onMouseEnter={openMore}
-          onMouseLeave={closeMore}
+          ref={moreWrapRef}
           onKeyDown={(e) => { if (e.key === "Escape") { setMoreOpen(false); setHistoryOpen(false); } }}
         >
           <button
