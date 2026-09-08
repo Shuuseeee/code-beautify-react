@@ -11,19 +11,16 @@ import {
 } from "@/lib/formatter";
 import { useI18n } from "@/i18n/context";
 import { useHistory, type HistoryEntry } from "./useHistory";
+import LZString from "lz-string";
 
 const AUTOSAVE_KEY = "beautify_autosave";
 
 function encodeShare(text: string): string {
-  const bytes = new TextEncoder().encode(text);
-  const binary = Array.from(bytes, (b) => String.fromCharCode(b)).join("");
-  return btoa(binary);
+  return LZString.compressToEncodedURIComponent(text);
 }
 
 function decodeShare(encoded: string): string {
-  const binary = atob(encoded);
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
+  return LZString.decompressFromEncodedURIComponent(encoded) ?? "";
 }
 
 export function useBeautifier() {
