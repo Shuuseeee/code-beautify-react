@@ -11,23 +11,23 @@ export const press = "transition-[background-color,color,border-color,opacity] d
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 const btnBase =
-  "inline-flex items-center gap-2 rounded-md text-base font-medium select-none " +
+  "inline-flex items-center gap-2 rounded-lg text-[15px] font-medium whitespace-nowrap select-none " +
   "disabled:opacity-45 disabled:pointer-events-none " + press;
 
 /** Filled accent. Exactly one of these is visible per screen. */
 export const btnPrimary =
-  `${btnBase} px-3 h-8 bg-accent text-accent-fg hover:bg-accent-hover`;
+  `${btnBase} px-4 h-9 bg-accent text-accent-fg hover:bg-accent-hover`;
 
 /** Hairline-bordered. The workhorse. */
 export const btnSecondary =
-  `${btnBase} px-3 h-8 border border-line bg-surface text-fg hover:bg-hover`;
+  `${btnBase} px-4 h-9 border border-line text-fg hover:bg-hover`;
 
 /** Touch-sized variants. Mobile taps need a 36px target; desktop rows are 32px. */
 export const btnPrimaryTouch =
-  `${btnBase} px-3 h-9 justify-center bg-accent text-accent-fg hover:bg-accent-hover`;
+  `${btnBase} px-4 h-10 justify-center bg-accent text-accent-fg hover:bg-accent-hover`;
 
 export const btnSecondaryTouch =
-  `${btnBase} px-3 h-9 justify-center border border-line bg-surface text-fg hover:bg-hover`;
+  `${btnBase} px-4 h-10 justify-center border border-line text-fg hover:bg-hover`;
 
 /** Square icon-only. */
 export const btnIcon =
@@ -48,7 +48,7 @@ export const popover =
   "rounded-md border border-line bg-surface-raise shadow-pop overflow-hidden pop-in";
 
 export const popoverItem =
-  `w-full flex items-center gap-2.5 px-3 h-9 text-base text-fg text-left hover:bg-hover ${press}`;
+  `w-full flex items-center gap-2.5 px-4 h-9 text-[15px] text-fg text-left hover:bg-hover ${press}`;
 
 /* ── Typography ───────────────────────────────────────────────────────────── */
 /** Small-caps section label. Used for panel titles and modal group headings. */

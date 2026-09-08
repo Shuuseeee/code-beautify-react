@@ -10,7 +10,6 @@ import { useThemeContext } from "@/hooks/ThemeContext";
 import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 import { useShakeAnimation } from "@/hooks/useShakeAnimation";
-import { useMonaco } from "@monaco-editor/react";
 
 export default function HomePage() {
   const { theme } = useThemeContext();
@@ -31,12 +30,6 @@ export default function HomePage() {
     if (shakeInput) triggerShake();
   }, [shakeInput, triggerShake]);
 
-  const monacoInstance = useMonaco();
-  useEffect(() => {
-    if (!monacoInstance) return;
-    monacoInstance.editor.setTheme(theme === "dark" ? "pierre-dark" : "pierre-light");
-  }, [monacoInstance, theme]);
-
   return (
     <>
       <div className="flex-1 flex flex-col max-w-[1500px] mx-auto w-full px-3 md:px-4 py-3 md:py-4 gap-3">
@@ -44,7 +37,6 @@ export default function HomePage() {
           mode={mode}
           detectedLang={detectedLang}
           onChange={handleModeChange}
-          theme={theme}
         />
 
         {/*

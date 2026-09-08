@@ -80,6 +80,20 @@
   --r-lg: 12px;
 
   --shadow-pop: 0 0 0 1px var(--border), 0 4px 12px -2px rgba(16, 23, 26, 0.10), 0 16px 40px -8px rgba(16, 23, 26, 0.16);
+
+  /* ── App bar (ServiceNow-style solid dark banner) ──────────────────────────
+     The top bar keeps a solid dark teal-green regardless of the page theme,
+     the way ServiceNow's platform banner does. These tokens are consumed only
+     inside <header>, so they never leak into the page surfaces above.       */
+  --appbar-bg:          #0c1a24;
+  --appbar-border:      rgba(255, 255, 255, 0.10);
+  --appbar-fg:          #eaebed;
+  --appbar-fg-muted:    rgba(255, 255, 255, 0.70);
+  --appbar-hover-fg:    #ffffff;
+  --appbar-hover:       rgba(255, 255, 255, 0.08);
+  --appbar-active:      rgba(255, 255, 255, 0.13);
+  --appbar-active-bar:  #62d84e;
+  --appbar-focus:       #7fe870;
 }
 
 .dark {
@@ -128,6 +142,18 @@
   --diff-void:       rgba(255, 255, 255, 0.016);
 
   --shadow-pop: 0 0 0 1px var(--border), 0 8px 24px -8px rgba(0, 0, 0, 0.65);
+
+  /* App bar in dark mode: go a touch deeper so it still separates from the
+     already-dark page body below it. */
+  --appbar-bg:          #080f16;
+  --appbar-border:      rgba(255, 255, 255, 0.08);
+  --appbar-fg:          #eaebed;
+  --appbar-fg-muted:    rgba(255, 255, 255, 0.70);
+  --appbar-hover-fg:    #ffffff;
+  --appbar-hover:       rgba(255, 255, 255, 0.07);
+  --appbar-active:      rgba(255, 255, 255, 0.11);
+  --appbar-active-bar:  #62d84e;
+  --appbar-focus:       #7fe870;
 }
 
 @layer base {
@@ -160,6 +186,14 @@
     outline: 2px solid var(--focus);
     outline-offset: 1px;
     border-radius: 3px;
+  }
+
+  /* On the dark app bar the page focus color (dark green) vanishes into the
+     deep teal — override it with the bar's bright-cyan focus token. The inset
+     offset keeps the ring off the sticky header's own bottom edge. */
+  header :focus-visible {
+    outline-color: var(--appbar-focus);
+    outline-offset: -2px;
   }
 }
 

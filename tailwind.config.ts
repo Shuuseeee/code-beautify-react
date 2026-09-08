@@ -38,10 +38,19 @@ const config: Config = {
         "diff-add-fg":    "var(--diff-add-fg)",
         "diff-del":       "var(--diff-del-bar)",
         "diff-del-fg":    "var(--diff-del-fg)",
+
+        "appbar":           "var(--appbar-bg)",
+        "appbar-border":    "var(--appbar-border)",
+        "appbar-fg":        "var(--appbar-fg)",
+        "appbar-fg-muted":  "var(--appbar-fg-muted)",
+        "appbar-hover-fg":  "var(--appbar-hover-fg)",
+        "appbar-indicator": "var(--appbar-active-bar)",
       },
       backgroundColor: {
         hover:  "var(--hover)",
         active: "var(--active)",
+        "appbar-hover": "var(--appbar-hover)",
+        "appbar-active": "var(--appbar-active)",
       },
       borderRadius: {
         sm: "var(--r-sm)",
@@ -54,12 +63,12 @@ const config: Config = {
         mono: ["'JetBrains Mono'", "'SF Mono'", "'Fira Code'", "Consolas", "monospace"],
       },
       fontSize: {
-        "2xs": ["10px", { lineHeight: "14px", letterSpacing: "0.04em" }],
-        xs:    ["11px", { lineHeight: "16px" }],
-        sm:    ["12px", { lineHeight: "18px" }],
-        base:  ["13px", { lineHeight: "20px" }],
-        md:    ["14px", { lineHeight: "21px" }],
-        lg:    ["16px", { lineHeight: "24px" }],
+        "2xs": ["11px", { lineHeight: "16px", letterSpacing: "0.04em" }],
+        xs:    ["12px", { lineHeight: "17px" }],
+        sm:    ["13px", { lineHeight: "19px" }],
+        base:  ["14px", { lineHeight: "21px" }],
+        md:    ["15px", { lineHeight: "22px" }],
+        lg:    ["17px", { lineHeight: "26px" }],
       },
       boxShadow: {
         pop:  "var(--shadow-pop)",

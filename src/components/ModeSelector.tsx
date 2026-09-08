@@ -1,13 +1,11 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import type { DetectedLang, Mode } from "@/lib/formatter";
 import { useI18n } from "@/i18n/context";
-import type { Theme } from "@/hooks/useTheme";
 import { langDot } from "@/lib/langColors";
-import { segment, segmentItem } from "@/lib/ui";
 
 gsap.registerPlugin(useGSAP);
 
@@ -15,7 +13,6 @@ interface ModeSelectorProps {
   mode: Mode;
   detectedLang: DetectedLang | null;
   onChange: (mode: Mode) => void;
-  theme: Theme;
 }
 
 const MODES: { value: Mode; label: string }[] = [
@@ -28,10 +25,7 @@ const MODES: { value: Mode; label: string }[] = [
 
 export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelectorProps) {
   const { t, locale } = useI18n();
-
-  const tablistRef = useRef<HTMLDivElement>(null);
-  const indicatorRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [hovered, setHovered] = useState<Mode | null>(null);
 
   const isActive = useCallback(
     (m: Mode) => {
@@ -42,52 +36,58 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
     [mode, detectedLang]
   );
 
-  // Derive the active index for the GSAP indicator
   const activeIndex = MODES.findIndex(({ value }) => isActive(value));
+
+  // GSAP sliding indicator — mirrors GlobalNav indicator pattern
+  const stripRef = useRef<HTMLDivElement>(null);
+  const indRef   = useRef<HTMLSpanElement>(null);
+  const tabRefs  = useRef<(HTMLButtonElement | null)[]>([]);
 
   useGSAP(() => {
     const activeTab = tabRefs.current[activeIndex];
-    const indicator = indicatorRef.current;
-    const tablist = tablistRef.current;
-    if (!activeTab || !indicator || !tablist) return;
+    const ind       = indRef.current;
+    const strip     = stripRef.current;
+    if (!activeTab || !ind || !strip) return;
 
     const measure = (animate: boolean) => {
-      const listRect = tablist.getBoundingClientRect();
-      const tabRect = activeTab.getBoundingClientRect();
-      const x = tabRect.left - listRect.left;
-      const w = tabRect.width;
+      const sr = strip.getBoundingClientRect();
+      const tr = activeTab.getBoundingClientRect();
+      const x  = tr.left - sr.left;
+      const w  = tr.width;
       if (animate) {
-        gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
+        gsap.to(ind, { x, width: w, duration: 0.3, ease: "power2.out" });
       } else {
-        gsap.set(indicator, { x, width: w });
+        gsap.set(ind, { x, width: w });
       }
     };
 
-    const isFirst = indicator.dataset.initialized !== "true";
+    const isFirst = ind.dataset.initialized !== "true";
     if (isFirst) {
-      // Wait for fonts before initial placement so width is stable
       document.fonts.ready.then(() => {
         measure(false);
-        indicator.dataset.initialized = "true";
+        ind.dataset.initialized = "true";
+        ind.dataset.locale = locale;
       });
-    } else if (indicator.dataset.locale !== locale) {
-      // Locale changed — tab label widths shifted, re-measure without animation
+    } else if (ind.dataset.locale !== locale) {
       measure(false);
-      indicator.dataset.locale = locale;
+      ind.dataset.locale = locale;
     } else {
       measure(true);
     }
-  }, { scope: tablistRef, dependencies: [activeIndex, locale] });
+  }, { scope: stripRef, dependencies: [activeIndex, locale] });
 
   return (
     <div className="flex items-center justify-between gap-3">
+      {/* Tab strip — DeveloperNav structure + GSAP sliding indicator */}
       <div
-        ref={tablistRef}
-        className={`relative ${segment} overflow-x-auto scrollbar-none`}
-        role="tablist"
+        ref={stripRef}
+        className="relative flex h-10 items-stretch gap-6 overflow-x-auto"
+        style={{ scrollbarWidth: "none" }}
+        onMouseLeave={() => setHovered(null)}
       >
         {MODES.map(({ value, label }, i) => {
           const active = isActive(value);
+          const isHov  = hovered === value;
           return (
             <button
               key={value}
@@ -95,23 +95,34 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
               role="tab"
               aria-selected={active}
               onClick={() => onChange(value)}
-              className={`${segmentItem(active)} whitespace-nowrap`}
+              onMouseEnter={() => setHovered(value)}
+              className={`relative flex items-center whitespace-nowrap text-[15px] transition-colors ${
+                active
+                  ? "font-medium text-fg"
+                  : "font-normal text-fg-muted hover:text-fg"
+              }`}
             >
               {value === "auto" ? t("autoDetect") : label}
+
+              {/* Hover indicator (non-active only) — static grey bar */}
+              {!active && isHov && (
+                <span className="absolute -bottom-[1px] left-0 right-0 h-[3px] rounded-full bg-line" />
+              )}
             </button>
           );
         })}
-        {/* GSAP-driven sliding indicator — mirrors Header.tsx pattern */}
-        <div
-          ref={indicatorRef}
+
+        {/* GSAP-driven active indicator */}
+        <span
+          ref={indRef}
           aria-hidden
-          className="absolute bottom-0 h-[2px] bg-accent rounded-full pointer-events-none"
+          className="pointer-events-none absolute bottom-0 left-0 h-[3px] rounded-full bg-accent"
         />
       </div>
 
       {/* Detection readout */}
       {mode === "auto" && detectedLang && (
-        <span className="hidden sm:flex items-center gap-1.5 text-sm text-fg-faint shrink-0">
+        <span className="hidden sm:flex shrink-0 items-center gap-1.5 text-sm text-fg-faint">
           <span
             aria-hidden
             className="h-[6px] w-[6px] rounded-full"

@@ -12,6 +12,7 @@ import {
   isServiceNowCode,
 } from "@/lib/monacoServiceNow";
 import { registerServiceNowTypes } from "@/lib/servicenowTypes";
+import { useThemeContext } from "@/hooks/ThemeContext";
 import {
   panel, panelHeader, eyebrow, meta, btnIcon, btnIconDanger, press,
   EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
@@ -49,6 +50,7 @@ export default function CodePanel({
   language,
 }: CodePanelProps) {
   const { t } = useI18n();
+  const { theme } = useThemeContext();
   const [copied, setCopied] = useState(false);
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   // Set once the user picks a language from the right-click menu; from then on
@@ -215,6 +217,7 @@ export default function CodePanel({
         <MonacoEditor
           value={value}
           language={monacoLang}
+          theme={theme === "dark" ? "pierre-dark" : "pierre-light"}
           onChange={(val) => onChange?.(val ?? "")}
           beforeMount={handleBeforeMount}
           onMount={handleMount}

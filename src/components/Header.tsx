@@ -1,25 +1,31 @@
 "use client";
 
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Sun, Moon, ChevronDown, CircleHelp, Check } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/i18n/context";
 import type { Theme } from "@/hooks/useTheme";
-import { btnIcon, popover, popoverItem, press, segment, segmentItem } from "@/lib/ui";
+import { popover, popoverItem, press } from "@/lib/ui";
 import { useChevronAnimation } from "@/hooks/useChevronAnimation";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 
 gsap.registerPlugin(useGSAP);
+
+export type { Theme };
 
 const NAV_LINKS = [
   { href: "/" as const, labelKey: "navBeautify" as const },
   { href: "/compare" as const, labelKey: "navCompare" as const },
 ];
 
-export type { Theme };
+const LOCALES = [
+  { code: "zh-CN" as const, label: "中文",   short: "中"  },
+  { code: "ja"    as const, label: "日本語", short: "日"  },
+  { code: "en"    as const, label: "English", short: "EN" },
+];
 
 interface HeaderProps {
   theme: Theme;
@@ -27,159 +33,153 @@ interface HeaderProps {
   onHelp: () => void;
 }
 
-const LOCALES = [
-  { code: "zh-CN" as const, label: "中文",    short: "中"  },
-  { code: "ja"    as const, label: "日本語",  short: "日"  },
-  { code: "en"    as const, label: "English", short: "EN" },
-];
-
 export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const { locale, setLocale, t } = useI18n();
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const popoverRef = useRef<HTMLUListElement>(null);
+  const [localeOpen, setLocaleOpen] = useState(false);
+  const localeDropdownRef = useRef<HTMLDivElement>(null);
+  const localePopoverRef = useRef<HTMLUListElement>(null);
+  const chevronRef = useChevronAnimation(localeOpen);
   const pathname = usePathname();
-  const chevronRef = useChevronAnimation(open);
 
+  // ── Sliding indicator (exact GlobalNav pattern from SN clone) ──────────────
+  // target = hovered item if hovering, else the active page link.
+  // Color: green (#62d84e) when target === active page, white when just hovering.
+  const [hovered, setHovered] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
-  const indicatorRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const indRef = useRef<HTMLSpanElement>(null);
+  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
 
+  const activeHref = NAV_LINKS.find(({ href }) => href === pathname)?.href ?? null;
+  const target = hovered ?? activeHref;
+
+  useLayoutEffect(() => {
+    const ind = indRef.current;
+    const nav = navRef.current;
+    if (!ind || !nav) return;
+
+    const measure = () => {
+      const el = target ? linkRefs.current[target] : null;
+      if (!el) { ind.style.opacity = "0"; return; }
+      const n = nav.getBoundingClientRect();
+      const b = el.getBoundingClientRect();
+      ind.style.left  = `${b.left - n.left}px`;
+      ind.style.width = `${b.width}px`;
+      ind.style.opacity = "1";
+      ind.style.backgroundColor = target === activeHref ? "#62d84e" : "#ffffff";
+    };
+
+    // On locale change tab labels re-render, fonts may shift width —
+    // wait for the font stack to settle before measuring.
+    document.fonts.ready.then(measure);
+  }, [target, activeHref, locale]);
+
+  // ── Locale popover animation ───────────────────────────────────────────────
   useIsomorphicLayoutEffect(() => {
-    if (open && popoverRef.current) {
+    if (localeOpen && localePopoverRef.current) {
       const ctx = gsap.context(() => {
-        gsap.fromTo(popoverRef.current,
+        gsap.fromTo(
+          localePopoverRef.current,
           { opacity: 0, y: -4, scale: 0.985 },
           { opacity: 1, y: 0, scale: 1, duration: 0.1, ease: "power2.out" }
         );
       });
       return () => ctx.revert();
     }
-  }, [open]);
+  }, [localeOpen]);
 
-  useGSAP(() => {
-    const activeIndex = NAV_LINKS.findIndex(({ href }) => href === pathname);
-    const activeTab = tabRefs.current[activeIndex];
-    const indicator = indicatorRef.current;
-    const nav = navRef.current;
-    if (!activeTab || !indicator || !nav) return;
-
-    const measure = (animate: boolean) => {
-      const navRect = nav.getBoundingClientRect();
-      const tabRect = activeTab.getBoundingClientRect();
-      const x = tabRect.left - navRect.left;
-      const w = tabRect.width;
-      if (animate) {
-        gsap.to(indicator, { x, width: w, duration: 0.3, ease: "power2.out" });
-      } else {
-        gsap.set(indicator, { x, width: w });
-      }
-    };
-
-    const isFirst = indicator.dataset.initialized !== "true";
-    if (isFirst) {
-      // Wait for fonts so tab widths are stable before measuring
-      document.fonts.ready.then(() => {
-        measure(false);
-        indicator.dataset.initialized = "true";
-        indicator.dataset.locale = locale;
-      });
-    } else if (indicator.dataset.locale !== locale) {
-      // Locale changed — re-measure without animation
-      measure(false);
-      indicator.dataset.locale = locale;
-    } else {
-      measure(true);
-    }
-  }, { scope: navRef, dependencies: [pathname, locale] });
-
+  // ── Close locale dropdown on outside click ─────────────────────────────────
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
+    function onDown(e: MouseEvent) {
+      if (!localeDropdownRef.current?.contains(e.target as Node)) {
+        setLocaleOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
   }, []);
 
   const currentLocale = LOCALES.find((l) => l.code === locale) ?? LOCALES[2];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
-      <div className="max-w-[1500px] mx-auto px-4 h-12 flex items-center justify-between gap-4">
-        {/* Wordmark + nav. The nav underline sits on the header's own bottom
-            border, so the active tab reads as a notch cut into the rule. */}
-        <div className="flex items-stretch gap-5 select-none min-w-0">
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-base font-semibold tracking-[-0.01em] text-fg">
-              Code Beautify
-            </span>
-          </div>
+    <header className="sticky top-0 z-40 h-16 w-full border-b border-white/10 bg-[#0c1a24] text-white">
+      <div className="mx-auto flex h-full max-w-[1500px] items-center px-6">
 
-          <nav ref={navRef} className={`relative flex items-center ${segment}`}>
-            {NAV_LINKS.map(({ href, labelKey }, i) => {
-              const active = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  ref={(el) => { tabRefs.current[i] = el; }}
-                  aria-current={active ? "page" : undefined}
-                  className={segmentItem(active)}
-                >
-                  {t(labelKey)}
-                </Link>
-              );
-            })}
-            {/* GSAP-driven sliding indicator */}
-            <div
-              ref={indicatorRef}
-              aria-hidden
-              className="absolute bottom-0 h-[2px] bg-accent rounded-full pointer-events-none"
-            />
-          </nav>
-        </div>
+        {/* Wordmark */}
+        <span className="mr-8 shrink-0 select-none text-[15px] font-semibold tracking-tight">
+          Code Beautify
+        </span>
 
-        {/* Controls */}
-        <div className="flex items-center gap-0.5 shrink-0">
-          <button onClick={onHelp} className={btnIcon} aria-label={t("navBeautify") ? "Help" : "Help"}>
-            <CircleHelp size={15} strokeWidth={1.75} />
+        {/* Nav — exact GlobalNav structure */}
+        <nav
+          ref={navRef}
+          className="relative hidden items-center gap-6 self-stretch lg:flex"
+          onMouseLeave={() => setHovered(null)}
+        >
+          {NAV_LINKS.map(({ href, labelKey }) => (
+            <Link
+              key={href}
+              href={href}
+              ref={(el) => { linkRefs.current[href] = el; }}
+              aria-current={pathname === href ? "page" : undefined}
+              onMouseEnter={() => setHovered(href)}
+              className="flex h-16 items-center text-[15px] font-normal text-white/90 transition-colors hover:text-white"
+            >
+              {t(labelKey)}
+            </Link>
+          ))}
+
+          {/* Sliding indicator: white on hover, green on active page */}
+          <span
+            ref={indRef}
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 h-[4px] w-0 opacity-0"
+            style={{
+              borderRadius: "2px 2px 0 0",
+              transition: "left 0.3s ease-in-out, width 0.3s ease-in-out, background-color 0.3s ease-in-out, opacity 0.2s",
+            }}
+          />
+        </nav>
+
+        {/* Right controls */}
+        <div className="ml-auto flex items-center gap-1">
+
+          <button
+            onClick={onHelp}
+            aria-label="Help"
+            className={`flex h-8 w-8 items-center justify-center rounded text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+          >
+            <CircleHelp size={17} strokeWidth={1.75} />
           </button>
 
           <button
             onClick={onToggleTheme}
-            className={btnIcon}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            className={`flex h-8 w-8 items-center justify-center rounded text-white/70 hover:bg-white/10 hover:text-white ${press}`}
           >
             {theme === "dark"
-              ? <Sun size={15} strokeWidth={1.75} />
-              : <Moon size={15} strokeWidth={1.75} />}
+              ? <Sun  size={17} strokeWidth={1.75} />
+              : <Moon size={17} strokeWidth={1.75} />}
           </button>
 
-          <div ref={dropdownRef} className="relative">
+          {/* Locale dropdown */}
+          <div ref={localeDropdownRef} className="relative">
             <button
-              onClick={() => setOpen((v) => !v)}
+              onClick={() => setLocaleOpen((v) => !v)}
               aria-haspopup="menu"
-              aria-expanded={open}
-              className={`inline-flex items-center gap-1 h-7 px-2 rounded-sm text-base text-fg-muted hover:text-fg hover:bg-hover ${press}`}
+              aria-expanded={localeOpen}
+              className={`flex h-8 items-center gap-1 rounded px-2.5 text-[15px] text-white/70 hover:bg-white/10 hover:text-white ${press}`}
             >
               <span className="hidden sm:inline">{currentLocale.label}</span>
               <span className="sm:hidden">{currentLocale.short}</span>
-              <ChevronDown
-                ref={chevronRef}
-                size={12}
-                strokeWidth={2}
-                className="text-fg-faint"
-              />
+              <ChevronDown ref={chevronRef} size={13} strokeWidth={2.5} />
             </button>
 
-            {open && (
-              <ul ref={popoverRef} className={`absolute right-0 mt-1.5 w-36 ${popover}`}>
+            {localeOpen && (
+              <ul ref={localePopoverRef} className={`absolute right-0 mt-1.5 w-36 ${popover}`}>
                 {LOCALES.map((l) => (
                   <li key={l.code}>
                     <button
-                      onClick={() => { setLocale(l.code); setOpen(false); }}
+                      onClick={() => { setLocale(l.code); setLocaleOpen(false); }}
                       className={`${popoverItem} justify-between`}
                     >
                       {l.label}

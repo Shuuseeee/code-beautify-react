@@ -278,7 +278,7 @@ export default function ActionPanel({
       </div>
 
       {/* ── DESKTOP rail ───────────────────────────────────────────────── */}
-      <div className="hidden md:flex flex-col gap-1 w-[188px] shrink-0 pt-9">
+      <div className="hidden md:flex flex-col gap-2 w-[200px] shrink-0 pt-9">
         <button
           type="button"
           onClick={onFormat}
@@ -314,7 +314,7 @@ export default function ActionPanel({
           <kbd className={kbdCls}>{MOD}⇧K</kbd>
         </button>
 
-        <div className="h-px bg-line my-1.5" />
+        <div className="h-px bg-line my-2" />
 
         {/* Remove comments */}
         <div
