@@ -237,7 +237,7 @@ export default function ActionPanel({
         </button>
 
         {moreOpen && (
-          <div ref={mobileMoreRef} className="col-span-2 rounded-md border border-line bg-surface overflow-hidden">
+          <div ref={mobileMoreRef} className="col-span-2 rounded-lg border border-line bg-surface overflow-hidden">
             <button type="button" onClick={onShare} className={popoverItem}>
               {shareCopied
                 ? <Check size={14} strokeWidth={2.25} className="text-success" />

@@ -81,7 +81,7 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
       {/* Tab strip — DeveloperNav structure + GSAP sliding indicator */}
       <div
         ref={stripRef}
-        className="relative flex h-10 items-stretch gap-6 overflow-x-auto"
+        className="relative flex h-10 items-stretch gap-7 overflow-x-auto"
         style={{ scrollbarWidth: "none" }}
         onMouseLeave={() => setHovered(null)}
       >

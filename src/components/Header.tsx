@@ -101,8 +101,8 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const currentLocale = LOCALES.find((l) => l.code === locale) ?? LOCALES[2];
 
   return (
-    <header className="sticky top-0 z-40 h-16 w-full border-b border-white/10 bg-[#0c1a24] text-white">
-      <div className="mx-auto flex h-full max-w-[1500px] items-center px-6">
+    <header className="sticky top-0 z-40 h-16 w-full bg-[#0c1a24] text-white">
+      <div className="mx-auto flex h-full max-w-[1440px] items-center px-6">
 
         {/* Wordmark */}
         <span className="mr-8 shrink-0 select-none text-[15px] font-semibold tracking-tight">
@@ -122,7 +122,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               ref={(el) => { linkRefs.current[href] = el; }}
               aria-current={pathname === href ? "page" : undefined}
               onMouseEnter={() => setHovered(href)}
-              className="flex h-16 items-center text-[15px] font-normal text-white/90 transition-colors hover:text-white"
+              className="flex h-16 items-center text-sm font-medium text-white/90 transition-colors hover:text-white"
             >
               {t(labelKey)}
             </Link>
@@ -132,9 +132,8 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <span
             ref={indRef}
             aria-hidden
-            className="pointer-events-none absolute bottom-0 left-0 h-[4px] w-0 opacity-0"
+            className="pointer-events-none absolute bottom-0 left-0 h-[3px] w-0 opacity-0"
             style={{
-              borderRadius: "2px 2px 0 0",
               transition: "left 0.3s ease-in-out, width 0.3s ease-in-out, background-color 0.3s ease-in-out, opacity 0.2s",
             }}
           />
@@ -146,7 +145,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <button
             onClick={onHelp}
             aria-label="Help"
-            className={`flex h-8 w-8 items-center justify-center rounded text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white ${press}`}
           >
             <CircleHelp size={17} strokeWidth={1.75} />
           </button>
@@ -154,7 +153,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
           <button
             onClick={onToggleTheme}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            className={`flex h-8 w-8 items-center justify-center rounded text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white ${press}`}
           >
             {theme === "dark"
               ? <Sun  size={17} strokeWidth={1.75} />
@@ -167,7 +166,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               onClick={() => setLocaleOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={localeOpen}
-              className={`flex h-8 items-center gap-1 rounded px-2.5 text-[15px] text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+              className={`flex h-8 items-center gap-1 rounded-lg px-2.5 text-sm text-white/70 hover:bg-white/10 hover:text-white ${press}`}
             >
               <span className="hidden sm:inline">{currentLocale.label}</span>
               <span className="sm:hidden">{currentLocale.short}</span>

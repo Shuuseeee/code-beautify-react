@@ -58,8 +58,7 @@ const config: Config = {
         lg: "var(--r-lg)",
       },
       fontFamily: {
-        sans: ["Lato", "Arial", "sans-serif"],
-        heading: ["Cabin", "Arial", "sans-serif"],
+        sans: ["Inter", "Arial", "sans-serif"],
         mono: ["'JetBrains Mono'", "'SF Mono'", "'Fira Code'", "Consolas", "monospace"],
       },
       fontSize: {
@@ -71,8 +70,9 @@ const config: Config = {
         lg:    ["17px", { lineHeight: "26px" }],
       },
       boxShadow: {
-        pop:  "var(--shadow-pop)",
-        hair: "0 0 0 1px var(--border)",
+        pop:   "var(--shadow-pop)",
+        modal: "var(--shadow-modal)",
+        hair:  "0 0 0 1px var(--border)",
       },
     },
   },

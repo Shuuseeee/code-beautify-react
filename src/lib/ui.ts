@@ -31,10 +31,10 @@ export const btnSecondaryTouch =
 
 /** Square icon-only. */
 export const btnIcon =
-  `inline-flex items-center justify-center h-7 w-7 rounded-sm text-fg-muted hover:text-fg hover:bg-hover ${press}`;
+  `inline-flex items-center justify-center h-7 w-7 rounded-md text-fg-muted hover:text-fg hover:bg-hover ${press}`;
 
 export const btnIconDanger =
-  `inline-flex items-center justify-center h-7 w-7 rounded-sm text-fg-muted hover:text-danger hover:bg-[var(--danger-wash)] ${press}`;
+  `inline-flex items-center justify-center h-7 w-7 rounded-md text-fg-muted hover:text-danger hover:bg-[var(--danger-wash)] ${press}`;
 
 /* ── Containers ───────────────────────────────────────────────────────────── */
 export const panel =
@@ -45,10 +45,10 @@ export const panelHeader =
   "flex items-center gap-2 h-9 px-3 border-b border-line bg-surface-sunk select-none shrink-0";
 
 export const popover =
-  "rounded-md border border-line bg-surface-raise shadow-pop overflow-hidden pop-in";
+  "rounded-lg border border-line bg-surface-raise shadow-pop overflow-hidden pop-in";
 
 export const popoverItem =
-  `w-full flex items-center gap-2.5 px-4 h-9 text-[15px] text-fg text-left hover:bg-hover ${press}`;
+  `w-full flex items-center gap-2.5 px-5 h-9 text-[16px] text-fg text-left hover:bg-hover ${press}`;
 
 /* ── Typography ───────────────────────────────────────────────────────────── */
 /** Small-caps section label. Used for panel titles and modal group headings. */

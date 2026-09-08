@@ -121,7 +121,7 @@ export default function DiffModal({
     >
       <div
         ref={panelRef}
-        className="w-full flex flex-col rounded-lg border border-line bg-surface shadow-pop overflow-hidden"
+        className="w-full flex flex-col rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
         style={{ maxWidth: "min(96vw, 1600px)", height: "calc(100vh - 3rem)" }}
         onClick={(e) => e.stopPropagation()}
       >

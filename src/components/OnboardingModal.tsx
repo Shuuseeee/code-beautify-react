@@ -92,7 +92,7 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
     >
       <div
         ref={panelRef}
-        className="w-full max-w-lg rounded-lg border border-line bg-surface shadow-pop overflow-hidden"
+        className="w-full max-w-lg rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 px-4 pt-4 pb-3.5 border-b border-line">
@@ -140,7 +140,7 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
               ))}
             </ul>
 
-            <div className="mt-4 px-3 py-2.5 rounded-md border border-line bg-surface-sunk">
+            <div className="mt-4 px-3 py-2.5 rounded-lg border border-line bg-surface-sunk">
               <p className="text-sm text-fg leading-relaxed">{t("onboardingTip")}</p>
             </div>
           </div>

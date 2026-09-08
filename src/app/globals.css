@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Cabin:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -18,7 +18,7 @@
 
 :root {
   /* Surfaces — neutral-0 / neutral-1 / neutral-2 from Coral */
-  --bg:            #F7F8F8;
+  --bg:            #FFFFFF;
   --surface:       #FFFFFF;
   --surface-sunk:  #F2F4F4;
   --surface-raise: #FFFFFF;
@@ -32,17 +32,17 @@
   --fg-muted:      #6B7A80;
   --fg-faint:      #9BAAB0;
 
-  /* Interaction */
-  --hover:         rgba(16, 23, 26, 0.045);
-  --active:        rgba(16, 23, 26, 0.075);
-  /* focus-ring → now-color--focus-2: rgb(36,138,19) */
-  --focus:         #248A13;
+  /* Interaction — matches zip's sn-wash for hover */
+  --hover:         #f5f6f7;
+  --active:        #eceef0;
+  /* focus-ring — green matching accent */
+  --focus:         #4aa72e;
 
-  /* Accent — Coral primary-1: rgb(0,128,163) = #00809B (teal/cyan-blue) */
-  --accent:        #00809B;
-  --accent-hover:  #00566E;
+  /* Accent — ServiceNow green (matches zip's sn-green-btn #4aa72e) */
+  --accent:        #4aa72e;
+  --accent-hover:  #3a8a22;
   --accent-fg:     #FFFFFF;
-  --accent-wash:   rgba(0, 128, 163, 0.10);
+  --accent-wash:   rgba(74, 167, 46, 0.12);
 
   /* Semantic — from Coral critical/positive/warning tokens */
   --danger:        #C00000;
@@ -77,9 +77,10 @@
      --now-window--border-radius:    12px (modals)              */
   --r-sm: 4px;
   --r-md: 6px;
-  --r-lg: 12px;
+  --r-lg: 16px;
 
-  --shadow-pop: 0 0 0 1px var(--border), 0 4px 12px -2px rgba(16, 23, 26, 0.10), 0 16px 40px -8px rgba(16, 23, 26, 0.16);
+  --shadow-pop:   0 0 0 1px var(--border), 0 16px 40px rgba(0, 0, 0, 0.14);
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.35);
 
   /* ── App bar (ServiceNow-style solid dark banner) ──────────────────────────
      The top bar keeps a solid dark teal-green regardless of the page theme,
@@ -112,13 +113,13 @@
   --hover:         rgba(255, 255, 255, 0.055);
   --active:        rgba(255, 255, 255, 0.085);
   /* focus-ring 暗色模式下用亮绿色 */
-  --focus:         #86B081;
+  --focus:         #62d84e;
 
-  /* 暗色模式 accent 用亮版青色，确保对比度 */
-  --accent:        #3AB4CC;
-  --accent-hover:  #56C8E0;
-  --accent-fg:     #02202A;
-  --accent-wash:   rgba(58, 180, 204, 0.14);
+  /* 暗色模式 accent 用亮绿，匹配 zip 的 sn-green */
+  --accent:        #62d84e;
+  --accent-hover:  #4aa72e;
+  --accent-fg:     #0a1a0a;
+  --accent-wash:   rgba(98, 216, 78, 0.14);
 
   --danger:        #E87070;
   --danger-wash:   rgba(232, 112, 112, 0.13);
@@ -141,7 +142,8 @@
   --diff-gutter-fg:  rgba(255, 255, 255, 0.26);
   --diff-void:       rgba(255, 255, 255, 0.016);
 
-  --shadow-pop: 0 0 0 1px var(--border), 0 8px 24px -8px rgba(0, 0, 0, 0.65);
+  --shadow-pop:   0 0 0 1px var(--border), 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.55);
 
   /* App bar in dark mode: go a touch deeper so it still separates from the
      already-dark page body below it. */
@@ -166,7 +168,7 @@
   body {
     background: var(--bg);
     color: var(--fg);
-    font-family: "Lato", Arial, sans-serif;
+    font-family: "Inter", Arial, sans-serif;
     font-feature-settings: "tnum" 1;
   }
 

@@ -62,7 +62,7 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
     >
       <div
         ref={panelRef}
-        className="w-full max-w-md rounded-lg border border-line bg-surface shadow-pop overflow-hidden"
+        className="w-full max-w-md rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 h-11 px-3 border-b border-line bg-surface-sunk">
@@ -79,7 +79,7 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
 
         {/* The parser's own words, verbatim, in the same face as the code. */}
         <div className="p-3">
-          <pre className="px-3 py-2.5 rounded-md border border-line bg-surface-sunk text-sm text-fg leading-relaxed whitespace-pre-wrap break-words">
+          <pre className="px-3 py-2.5 rounded-lg border border-line bg-surface-sunk text-sm text-fg leading-relaxed whitespace-pre-wrap break-words">
             {message}
           </pre>
         </div>
