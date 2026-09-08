@@ -13,7 +13,7 @@ import {
 } from "@/lib/monacoServiceNow";
 import { registerServiceNowTypes } from "@/lib/servicenowTypes";
 import {
-  btnIcon, btnSecondary, eyebrow,
+  btnIcon, eyebrow,
   EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
 } from "@/lib/ui";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
