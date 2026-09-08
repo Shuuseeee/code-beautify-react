@@ -208,11 +208,6 @@ export default function DiffModal({
           />
         </div>
 
-        <div className="flex justify-end px-3 h-12 items-center border-t border-line bg-surface-sunk shrink-0">
-          <button onClick={onClose} className={btnSecondary}>
-            {t("close")}
-          </button>
-        </div>
       </div>
     </div>
   );
