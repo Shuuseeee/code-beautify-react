@@ -51,7 +51,9 @@ export function useBeautifier() {
     if (match) {
       try {
         const decoded = decodeShare(match[1]);
-        setInput(decoded);
+        const parsed = JSON.parse(decoded) as { input: string; output: string };
+        setInput(parsed.input ?? "");
+        setOutput(parsed.output ?? "");
         window.history.replaceState(null, "", window.location.pathname);
       } catch {
         // ignore malformed hash
@@ -212,7 +214,7 @@ export function useBeautifier() {
   const handleShare = useCallback(() => {
     if (!input.trim()) return;
     try {
-      const encoded = encodeShare(input);
+      const encoded = encodeShare(JSON.stringify({ input, output }));
       const url = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
       navigator.clipboard.writeText(url).then(() => {
         setShareCopied(true);
@@ -221,7 +223,7 @@ export function useBeautifier() {
     } catch {
       // ignore clipboard errors
     }
-  }, [input]);
+  }, [input, output]);
 
   const handleRestoreHistory = useCallback((entry: HistoryEntry) => {
     setInput(entry.input);
