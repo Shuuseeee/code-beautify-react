@@ -2,7 +2,7 @@
 
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { X, Columns2, Rows2, ArrowLeftRight } from "lucide-react";
+import { X, Columns2, Rows2, ArrowLeftRight, WrapText } from "lucide-react";
 import { useI18n } from "@/i18n/context";
 import dynamic from "next/dynamic";
 import type * as Monaco from "monaco-editor";
@@ -51,6 +51,7 @@ export default function DiffModal({
   const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(open);
   const [sideBySide, setSideBySide] = useState(true);
+  const [wrapLines, setWrapLines] = useState(true);
   const [swapped, setSwapped] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -107,7 +108,7 @@ export default function DiffModal({
     : language === "html"               ? "html"
     : language === "json"               ? "json"
     : language === "typescript"         ? "typescript"
-    : "javascript";
+    : "xml";
   const monacoTheme = theme === "dark" ? "pierre-dark" : "pierre-light";
 
   // Swap flips which side is original vs. modified (and the header legend).
@@ -168,6 +169,15 @@ export default function DiffModal({
                 ? <Rows2 size={15} strokeWidth={1.75} />
                 : <Columns2 size={15} strokeWidth={1.75} />}
             </button>
+            <button
+              onClick={() => setWrapLines((w) => !w)}
+              className={`${btnIcon} ${wrapLines ? "text-accent" : ""}`}
+              title={t("wrapLines")}
+              aria-label={t("wrapLines")}
+              aria-pressed={wrapLines}
+            >
+              <WrapText size={15} strokeWidth={1.75} />
+            </button>
             <button onClick={onClose} className={btnIcon} aria-label={t("close")}>
               <X size={15} strokeWidth={1.75} />
             </button>
@@ -199,7 +209,7 @@ export default function DiffModal({
               lineDecorationsWidth: 6,
               padding: { top: 8, bottom: 12 },
               renderIndicators: true,
-              diffWordWrap: "on",
+              diffWordWrap: wrapLines ? "on" : "off",
               "semanticHighlighting.enabled": true,
               bracketPairColorization: { enabled: true },
               scrollbar: {

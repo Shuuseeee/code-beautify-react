@@ -39,6 +39,7 @@
   "comparePlaceholderLeft": "将原始文本粘贴到此处…",
   "comparePlaceholderRight": "将修改后的文本粘贴到此处…",
   "compareLines": "行",
+  "compareChars": "字符",
   "compareIdentical": "两段文本完全相同",
   "compareEmptyHint": "在两侧输入文本，然后点击对比",
   "history": "历史",
@@ -46,5 +47,6 @@
   "clearHistory": "清空记录",
   "shareCode": "分享",
   "shareLinkCopied": "链接已复制",
-  "more": "更多"
+  "more": "更多",
+  "wrapLines": "自动换行"
 }

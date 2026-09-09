@@ -273,7 +273,7 @@ export default function StringCompare() {
               <span className={eyebrow}>{label}</span>
               {value && (
                 <span className={meta}>
-                  {value.split("\n").length} ln · {value.length} ch
+                  {value.split("\n").length} {t("compareLines")} · {value.length} {t("compareChars")}
                 </span>
               )}
             </div>

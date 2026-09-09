@@ -14,7 +14,7 @@ import {
 import { registerServiceNowTypes } from "@/lib/servicenowTypes";
 import { useThemeContext } from "@/hooks/ThemeContext";
 import {
-  panel, panelHeader, eyebrow, meta, btnIcon, btnIconDanger, press,
+  panel, panelHeader, eyebrow, btnIcon, btnIconDanger, press,
   EDITOR_FONT_FAMILY, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT,
 } from "@/lib/ui";
 import { langDot } from "@/lib/langColors";
@@ -86,8 +86,6 @@ export default function CodePanel({
     editor.focus();
   }, [errorLine]);
 
-  const lineCount = value ? value.split("\n").length : 0;
-  const charCount = value.length;
 
   const isXml = /^\s*<\?xml\b/.test(value) || language === "xml";
   const isSnow = !isXml && isServiceNowCode(value);
@@ -200,11 +198,6 @@ export default function CodePanel({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {value && (
-            <span className={meta}>
-              {lineCount} ln · {charCount} ch
-            </span>
-          )}
           {value && (
             <div className="flex items-center gap-0.5 -mr-1">
               <button onClick={handleCopy} title={t("copy")} tabIndex={-1} className={btnIcon}>
