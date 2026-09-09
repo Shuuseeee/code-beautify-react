@@ -106,7 +106,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
 
         {/* Wordmark */}
         <span className="mr-8 shrink-0 select-none text-[15px] font-semibold tracking-tight">
-          Code Beautify
+          Code Beautify for S-NOW Dev
         </span>
 
         {/* Nav — exact GlobalNav structure */}
