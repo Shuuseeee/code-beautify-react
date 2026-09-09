@@ -109,7 +109,7 @@ export default function DiffModal({
     : language === "json"               ? "json"
     : language === "typescript"         ? "typescript"
     : "xml";
-  const monacoTheme = theme === "dark" ? "pierre-dark" : "pierre-light";
+  const monacoTheme = theme === "dark" ? "vs-dark" : "vs";
 
   // Swap flips which side is original vs. modified (and the header legend).
   const leftText = swapped ? modified : original;

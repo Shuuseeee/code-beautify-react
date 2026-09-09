@@ -218,7 +218,7 @@ export default function CodePanel({
         <MonacoEditor
           value={value}
           language={monacoLang}
-          theme={theme === "dark" ? "pierre-dark" : "pierre-light"}
+          theme={theme === "dark" ? "vs-dark" : "vs"}
           onChange={(val) => onChange?.(val ?? "")}
           beforeMount={handleBeforeMount}
           onMount={handleMount}
@@ -245,7 +245,7 @@ export default function CodePanel({
               horizontalScrollbarSize: 10,
               alwaysConsumeMouseWheel: false,
             },
-            renderLineHighlight: "line",
+            renderLineHighlight: "gutter",
             contextmenu: true,
             colorDecorators: true,
             "semanticHighlighting.enabled": true,
