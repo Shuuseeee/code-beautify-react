@@ -1,6 +1,6 @@
 import { js as jsBeautify, html as htmlBeautify, css as cssBeautify } from "js-beautify";
 
-export type DetectedLang = "html" | "css" | "javascript" | "typescript" | "json" | "plaintext";
+export type DetectedLang = "html" | "css" | "scss" | "javascript" | "typescript" | "json" | "xml" | "plaintext";
 export type Mode = "auto" | DetectedLang;
 
 // ── highlight.js singleton — imported & registered once, then cached ──
@@ -10,15 +10,18 @@ function getHljs() {
   if (!hljsPromise) {
     hljsPromise = (async () => {
       const { default: hljs } = await import("highlight.js/lib/core");
-      const [xml, css, js, ts, json] = await Promise.all([
+      const [xml, css, scss, js, ts, json] = await Promise.all([
         import("highlight.js/lib/languages/xml"),
         import("highlight.js/lib/languages/css"),
+        import("highlight.js/lib/languages/scss"),
         import("highlight.js/lib/languages/javascript"),
         import("highlight.js/lib/languages/typescript"),
         import("highlight.js/lib/languages/json"),
       ]);
       hljs.registerLanguage("html", xml.default);
+      hljs.registerLanguage("xml", xml.default);
       hljs.registerLanguage("css", css.default);
+      hljs.registerLanguage("scss", scss.default);
       hljs.registerLanguage("javascript", js.default);
       hljs.registerLanguage("typescript", ts.default);
       hljs.registerLanguage("json", json.default);
@@ -36,8 +39,10 @@ export async function detectLanguage(code: string): Promise<DetectedLang> {
 
 export function formatCode(code: string, type: DetectedLang): string {
   switch (type) {
-    case "html":        return htmlBeautify(code, { indent_size: 2 });
-    case "css":         return cssBeautify(code,  { indent_size: 2 });
+    case "html":
+    case "xml":         return htmlBeautify(code, { indent_size: 2 });
+    case "css":
+    case "scss":        return cssBeautify(code,  { indent_size: 2 });
     case "javascript":
     case "typescript":  return jsBeautify(code,   { indent_size: 2 });
     case "json":        return JSON.stringify(JSON.parse(code), null, 2);

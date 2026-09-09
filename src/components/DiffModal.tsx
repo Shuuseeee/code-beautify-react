@@ -98,12 +98,15 @@ export default function DiffModal({
 
   if (!isVisible) return null;
 
-  const isSnow = isServiceNowCode(original) || isServiceNowCode(modified);
-  const monacoLang = isSnow
-    ? "javascript"
-    : language === "html" ? "html"
-    : language === "css"  ? "css"
-    : language === "json" ? "json"
+  const isXml = /^\s*<\?xml\b/.test(original) || /^\s*<\?xml\b/.test(modified) || language === "xml";
+  const isSnow = !isXml && (isServiceNowCode(original) || isServiceNowCode(modified));
+  const monacoLang = isXml              ? "xml"
+    : isSnow                            ? "javascript"
+    : language === "scss"               ? "scss"
+    : language === "css"                ? "css"
+    : language === "html"               ? "html"
+    : language === "json"               ? "json"
+    : language === "typescript"         ? "typescript"
     : "javascript";
   const monacoTheme = theme === "dark" ? "pierre-dark" : "pierre-light";
 

@@ -18,7 +18,9 @@ interface ModeSelectorProps {
 const MODES: { value: Mode; label: string }[] = [
   { value: "auto",       label: "AUTO" },
   { value: "html",       label: "HTML" },
+  { value: "xml",        label: "XML"  },
   { value: "css",        label: "CSS"  },
+  { value: "scss",       label: "SCSS" },
   { value: "javascript", label: "JS"   },
   { value: "json",       label: "JSON" },
 ];

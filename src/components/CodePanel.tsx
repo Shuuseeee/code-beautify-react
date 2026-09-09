@@ -89,11 +89,17 @@ export default function CodePanel({
   const lineCount = value ? value.split("\n").length : 0;
   const charCount = value.length;
 
-  const isSnow = isServiceNowCode(value);
-  // ServiceNow code renders as plain javascript, colored by injected type defs
-  // (semantic highlighting). Auto-detection is skipped once the user manually
-  // picks a language from the context menu.
-  const monacoLang = isSnow ? "javascript" : (language ?? "plaintext");
+  const isXml = /^\s*<\?xml\b/.test(value) || language === "xml";
+  const isSnow = !isXml && isServiceNowCode(value);
+  const monacoLang = isXml        ? "xml"
+    : isSnow                      ? "javascript"
+    : language === "scss"         ? "scss"
+    : language === "css"          ? "css"
+    : language === "html"         ? "html"
+    : language === "json"         ? "json"
+    : language === "typescript"   ? "typescript"
+    : language === "javascript"   ? "javascript"
+    : (language ?? "plaintext");
 
   const monacoInstance = useMonaco();
 
