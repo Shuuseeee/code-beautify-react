@@ -10,6 +10,7 @@ import { useThemeContext } from "@/hooks/ThemeContext";
 import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 import { useShakeAnimation } from "@/hooks/useShakeAnimation";
+import { isServiceNowCode } from "@/lib/monacoServiceNow";
 
 export default function HomePage() {
   const { theme } = useThemeContext();
@@ -30,12 +31,15 @@ export default function HomePage() {
     if (shakeInput) triggerShake();
   }, [shakeInput, triggerShake]);
 
+  const isSnow = /^\s*<\?xml\b/.test(input) ? false : isServiceNowCode(input);
+
   return (
     <>
       <div className="flex-1 flex flex-col max-w-[1500px] mx-auto w-full px-3 md:px-4 py-3 md:py-4 gap-3">
         <ModeSelector
           mode={mode}
           detectedLang={detectedLang}
+          isSnow={isSnow}
           onChange={handleModeChange}
         />
 

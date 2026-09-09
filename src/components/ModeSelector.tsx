@@ -12,6 +12,7 @@ gsap.registerPlugin(useGSAP);
 interface ModeSelectorProps {
   mode: Mode;
   detectedLang: DetectedLang | null;
+  isSnow: boolean;
   onChange: (mode: Mode) => void;
 }
 
@@ -25,7 +26,7 @@ const MODES: { value: Mode; label: string }[] = [
   { value: "json",       label: "JSON" },
 ];
 
-export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelectorProps) {
+export default function ModeSelector({ mode, detectedLang, isSnow, onChange }: ModeSelectorProps) {
   const { t, locale } = useI18n();
   const [hovered, setHovered] = useState<Mode | null>(null);
 
@@ -79,7 +80,7 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
   }, { scope: stripRef, dependencies: [activeIndex, locale] });
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 border-b border-line pb-0">
       {/* Tab strip — DeveloperNav structure + GSAP sliding indicator */}
       <div
         ref={stripRef}
@@ -123,14 +124,19 @@ export default function ModeSelector({ mode, detectedLang, onChange }: ModeSelec
       </div>
 
       {/* Detection readout */}
-      {mode === "auto" && detectedLang && (
+      {mode === "auto" && (isSnow || detectedLang) && (
         <span className="hidden sm:flex shrink-0 items-center gap-1.5 text-sm text-fg-faint">
-          <span
-            aria-hidden
-            className="h-[6px] w-[6px] rounded-full"
-            style={{ background: langDot(detectedLang) }}
-          />
-          {detectedLang}
+          {isSnow ? (
+            <>
+              <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: langDot("javascript") }} />
+              ServiceNow
+            </>
+          ) : (
+            <>
+              <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: langDot(detectedLang) }} />
+              {detectedLang}
+            </>
+          )}
         </span>
       )}
     </div>

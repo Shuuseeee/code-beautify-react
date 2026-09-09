@@ -229,6 +229,11 @@ export function useBeautifier() {
     setInput(entry.input);
     setOutput(entry.output);
     setErrorLine(null);
+    if (detectTimer.current) clearTimeout(detectTimer.current);
+    detectTimer.current = setTimeout(async () => {
+      const lang = await detectLanguage(entry.input);
+      setDetectedLang(lang === "plaintext" ? null : lang);
+    }, 0);
   }, []);
 
   // ── Keyboard shortcuts (stable via refs to avoid listener churn) ──
