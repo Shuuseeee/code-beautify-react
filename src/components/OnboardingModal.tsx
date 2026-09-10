@@ -37,10 +37,14 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
   const [isVisible, setIsVisible] = useState(open);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { reducedMotion } = useGsapReducedMotion();
 
   useEffect(() => {
-    if (open) setIsVisible(true);
+    if (open) {
+      setIsVisible(true);
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
+    }
   }, [open]);
 
   useIsomorphicLayoutEffect(() => {
@@ -89,6 +93,7 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
       onClick={onClose}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="onboarding-modal-title"
     >
       <div
         ref={panelRef}
@@ -97,12 +102,12 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
       >
         <div className="flex items-start justify-between gap-3 px-4 pt-4 pb-3.5 border-b border-line">
           <div>
-            <h2 className="text-lg font-semibold tracking-[-0.01em] text-fg">
+            <h2 id="onboarding-modal-title" className="text-lg font-semibold tracking-[-0.01em] text-fg">
               {t("onboardingTitle")}
             </h2>
             <p className="mt-0.5 text-base text-fg-muted">{t("onboardingSubtitle")}</p>
           </div>
-          <button onClick={onClose} className={`${btnIcon} -mr-1 -mt-0.5`} aria-label={t("close")}>
+          <button ref={closeButtonRef} type="button" onClick={onClose} className={`${btnIcon} -mr-1 -mt-0.5`} aria-label={t("close")}>
             <X size={14} strokeWidth={1.75} />
           </button>
         </div>

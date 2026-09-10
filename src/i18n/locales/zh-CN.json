@@ -50,5 +50,13 @@
   "more": "更多",
   "wrapLines": "自动换行",
   "draftFound": "检测到上次的未保存草稿。",
-  "draftRestore": "恢复"
+  "draftRestore": "恢复",
+  "shareFailed": "链接复制失败，请重试。",
+  "jumpToLine": "跳转到此行",
+  "removeFromHistory": "从历史中删除",
+  "languageMode": "语言模式",
+  "timeJustNow": "刚刚",
+  "timeMinutesAgo": "{n}分钟前",
+  "timeHoursAgo": "{n}小时前",
+  "timeDaysAgo": "{n}天前"
 }

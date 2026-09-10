@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { diffLines, diffChars, type Change } from "diff";
 import { GitCompare, Eraser, Link2, Check } from "lucide-react";
 import { useI18n } from "@/i18n/context";
+import LZString from "lz-string";
 import {
   panel, panelHeader, eyebrow, meta,
   btnPrimary, btnSecondary,
@@ -12,17 +13,13 @@ import {
 // ── URL share helpers ─────────────────────────────────────────────────────────
 
 function encodeShare(left: string, right: string): string {
-  const json = JSON.stringify({ l: left, r: right });
-  const bytes = new TextEncoder().encode(json);
-  const binary = Array.from(bytes, (b) => String.fromCharCode(b)).join("");
-  return btoa(binary);
+  return LZString.compressToEncodedURIComponent(JSON.stringify({ l: left, r: right }));
 }
 
 function decodeShare(encoded: string): { l: string; r: string } | null {
   try {
-    const binary = atob(encoded);
-    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-    const json = new TextDecoder().decode(bytes);
+    const json = LZString.decompressFromEncodedURIComponent(encoded);
+    if (!json) return null;
     const parsed = JSON.parse(json);
     if (typeof parsed.l === "string" && typeof parsed.r === "string") return parsed;
     return null;

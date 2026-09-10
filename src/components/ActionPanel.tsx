@@ -20,14 +20,6 @@ import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 const isMac = typeof navigator !== "undefined" && /mac/i.test(navigator.userAgent);
 const MOD = isMac ? "⌘" : "Ctrl";
 
-function relativeTime(ts: number): string {
-  const diff = Date.now() - ts;
-  if (diff < 60_000)     return "just now";
-  if (diff < 3_600_000)  return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
-}
-
 interface HistoryListProps {
   history: HistoryEntry[];
   onClose: () => void;
@@ -39,6 +31,16 @@ interface HistoryListProps {
 }
 
 function HistoryList({ history, onClose, onRestore, onRemove, onClear, emptyLabel, clearLabel }: HistoryListProps) {
+  const { t } = useI18n();
+
+  function relativeTime(ts: number): string {
+    const diff = Date.now() - ts;
+    if (diff < 60_000)     return t("timeJustNow");
+    if (diff < 3_600_000)  return t("timeMinutesAgo").replace("{n}", String(Math.floor(diff / 60_000)));
+    if (diff < 86_400_000) return t("timeHoursAgo").replace("{n}", String(Math.floor(diff / 3_600_000)));
+    return t("timeDaysAgo").replace("{n}", String(Math.floor(diff / 86_400_000)));
+  }
+
   if (history.length === 0) {
     return <p className="px-3 py-4 text-sm text-fg-faint text-center">{emptyLabel}</p>;
   }
@@ -70,7 +72,7 @@ function HistoryList({ history, onClose, onRestore, onRemove, onClear, emptyLabe
             type="button"
             onClick={() => onRemove?.(entry.id)}
             className={`px-2 opacity-0 group-hover:opacity-100 focus:opacity-100 text-fg-faint hover:text-danger ${press}`}
-            aria-label="Remove from history"
+            aria-label={t("removeFromHistory")}
           >
             <X size={11} strokeWidth={2} />
           </button>

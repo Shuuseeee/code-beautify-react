@@ -50,5 +50,13 @@
   "more": "More",
   "wrapLines": "Wrap Lines",
   "draftFound": "A draft from your last session was found.",
-  "draftRestore": "Restore"
+  "draftRestore": "Restore",
+  "shareFailed": "Failed to copy link. Please try again.",
+  "jumpToLine": "Jump to this line",
+  "removeFromHistory": "Remove from history",
+  "languageMode": "Language mode",
+  "timeJustNow": "just now",
+  "timeMinutesAgo": "{n}m ago",
+  "timeHoursAgo": "{n}h ago",
+  "timeDaysAgo": "{n}d ago"
 }

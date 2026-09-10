@@ -5,8 +5,6 @@ import { Analytics } from "@vercel/analytics/react";
 import ClientLayout from "@/components/ClientLayout";
 
 export const viewport: Viewport = {
-  maximumScale: 1,
-  userScalable: false,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
     { media: "(prefers-color-scheme: dark)",  color: "#0C0C0D" },

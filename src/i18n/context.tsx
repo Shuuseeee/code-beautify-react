@@ -33,7 +33,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem("locale") as Locale | null;
     const resolved = saved && locales[saved] ? saved : detectLocale();
     setLocaleState(resolved);
-    document.documentElement.lang = resolved;
   }, []);
 
   useEffect(() => {
@@ -45,7 +44,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("locale", newLocale);
   }, []);
 
-  const t = useCallback((key: keyof Messages) => locales[locale][key] ?? key, [locale]);
+  const t = useCallback((key: keyof Messages) => locales[locale][key] ?? locales["en"][key] ?? key, [locale]);
 
   return <I18nContext.Provider value={{ locale, setLocale, t }}>{children}</I18nContext.Provider>;
 }

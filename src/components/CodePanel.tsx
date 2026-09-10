@@ -188,8 +188,10 @@ export default function CodePanel({
           )}
           {errorLine && (
             <button
+              type="button"
               onClick={handleErrorBadgeClick}
-              title="Jump to this line"
+              title={t("jumpToLine")}
+              aria-label={t("jumpToLine")}
               className={`inline-flex items-center gap-1 px-1.5 h-[18px] rounded-[4px] text-2xs font-mono font-semibold text-danger bg-[var(--danger-wash)] hover:brightness-95 ${press}`}
             >
               <TriangleAlert size={9} strokeWidth={2.5} />
@@ -201,12 +203,12 @@ export default function CodePanel({
         <div className="flex items-center gap-2 shrink-0">
           {value && (
             <div className="flex items-center gap-0.5 -mr-1">
-              <button onClick={handleCopy} title={t("copy")} tabIndex={-1} className={btnIcon}>
+              <button type="button" onClick={handleCopy} title={t("copy")} aria-label={t("copy")} className={btnIcon}>
                 {copied
                   ? <Check size={13} strokeWidth={2.25} className="text-success" />
                   : <Copy size={13} strokeWidth={1.75} />}
               </button>
-              <button onClick={onClear} title={t("clear")} tabIndex={-1} className={btnIconDanger}>
+              <button type="button" onClick={onClear} title={t("clear")} aria-label={t("clear")} className={btnIconDanger}>
                 <Trash2 size={13} strokeWidth={1.75} />
               </button>
             </div>

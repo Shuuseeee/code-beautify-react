@@ -50,5 +50,13 @@
   "more": "その他",
   "wrapLines": "折り返し",
   "draftFound": "前回の未保存の下書きが見つかりました。",
-  "draftRestore": "復元"
+  "draftRestore": "復元",
+  "shareFailed": "リンクのコピーに失敗しました。もう一度お試しください。",
+  "jumpToLine": "この行へジャンプ",
+  "removeFromHistory": "履歴から削除",
+  "languageMode": "言語モード",
+  "timeJustNow": "たった今",
+  "timeMinutesAgo": "{n}分前",
+  "timeHoursAgo": "{n}時間前",
+  "timeDaysAgo": "{n}日前"
 }

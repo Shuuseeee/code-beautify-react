@@ -34,7 +34,9 @@ function getHljs() {
 export async function detectLanguage(code: string): Promise<DetectedLang> {
   if (/^\s*<\?xml\b/.test(code)) return "xml";
   const hljs = await getHljs();
-  const result = hljs.highlightAuto(code, ["javascript", "typescript", "css", "html", "json"]);
+  // Limit to first 2000 chars so detection stays fast on large files
+  const sample = code.length > 2000 ? code.slice(0, 2000) : code;
+  const result = hljs.highlightAuto(sample, ["javascript", "typescript", "css", "html", "json"]);
   return (result.language as DetectedLang) ?? "plaintext";
 }
 

@@ -39,6 +39,8 @@ export default function ModeSelector({ mode, detectedLang, isSnow, onChange }: M
     <div className="flex items-center justify-between gap-3 border-b border-line pb-0">
       {/* Tab strip — DeveloperNav structure, pure CSS bars */}
       <div
+        role="tablist"
+        aria-label={t("languageMode")}
         className="flex h-10 items-stretch gap-7 overflow-x-auto"
         style={{ scrollbarWidth: "none" }}
         onMouseLeave={() => setHovered(null)}

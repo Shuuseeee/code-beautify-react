@@ -55,6 +55,7 @@ export default function DiffModal({
   const [swapped, setSwapped] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { reducedMotion } = useGsapReducedMotion();
 
   useEffect(() => {
@@ -69,6 +70,8 @@ export default function DiffModal({
     if (open) {
       setIsVisible(true);
       setSwapped(false); // reset swap each time the modal reopens
+      // Move focus into the dialog so keyboard users can interact immediately
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
     }
   }, [open]);
 
@@ -103,12 +106,13 @@ export default function DiffModal({
   const isSnow = !isXml && (isServiceNowCode(original) || isServiceNowCode(modified));
   const monacoLang = isXml              ? "xml"
     : isSnow                            ? "javascript"
-    : language === "scss"               ? "scss"
-    : language === "css"                ? "css"
-    : language === "html"               ? "html"
-    : language === "json"               ? "json"
+    : language === "javascript"         ? "javascript"
     : language === "typescript"         ? "typescript"
-    : "xml";
+    : language === "json"               ? "json"
+    : language === "html"               ? "html"
+    : language === "css"                ? "css"
+    : language === "scss"               ? "scss"
+    : (language ?? "plaintext");
   const monacoTheme = theme === "dark" ? "vs-dark" : "vs";
 
   // Swap flips which side is original vs. modified (and the header legend).
@@ -122,6 +126,7 @@ export default function DiffModal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="diff-modal-title"
     >
       <div
         ref={panelRef}
@@ -132,7 +137,7 @@ export default function DiffModal({
         {/* Header — reads like a file header: what's compared, in what language. */}
         <div className="flex items-center justify-between gap-3 h-11 px-3 border-b border-line bg-surface-sunk shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <h2 className="text-base font-semibold text-fg truncate">
+            <h2 id="diff-modal-title" className="text-base font-semibold text-fg truncate">
               {t("compareModalTitle")}
             </h2>
             <span className="px-1.5 h-[18px] inline-flex items-center gap-1 rounded-[4px] border border-line text-2xs font-mono text-fg-muted shrink-0">
@@ -179,7 +184,7 @@ export default function DiffModal({
             >
               <WrapText size={15} strokeWidth={1.75} />
             </button>
-            <button onClick={onClose} className={btnIcon} aria-label={t("close")}>
+            <button ref={closeButtonRef} type="button" onClick={onClose} className={btnIcon} aria-label={t("close")}>
               <X size={15} strokeWidth={1.75} />
             </button>
           </div>

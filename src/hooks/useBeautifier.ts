@@ -44,6 +44,9 @@ export function useBeautifier() {
   });
 
   const detectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shareTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const draftRef = useRef<{ input: string; output: string } | null>(null);
 
   // ── Restore from URL hash or auto-save on mount ──
@@ -53,10 +56,12 @@ export function useBeautifier() {
     if (match) {
       try {
         const decoded = decodeShare(match[1]);
-        const parsed = JSON.parse(decoded) as { input: string; output: string };
-        setInput(parsed.input ?? "");
-        setOutput(parsed.output ?? "");
-        window.history.replaceState(null, "", window.location.pathname);
+        const parsed = JSON.parse(decoded);
+        if (parsed && typeof parsed.input === "string" && typeof parsed.output === "string") {
+          setInput(parsed.input);
+          setOutput(parsed.output);
+          window.history.replaceState(null, "", window.location.pathname);
+        }
       } catch {
         // ignore malformed hash
       }
@@ -93,8 +98,9 @@ export function useBeautifier() {
   }, [input, output]);
 
   const triggerShake = useCallback(() => {
+    if (shakeTimer.current) clearTimeout(shakeTimer.current);
     setShakeInput(true);
-    setTimeout(() => setShakeInput(false), 500);
+    shakeTimer.current = setTimeout(() => setShakeInput(false), 500);
   }, []);
 
   const showError = useCallback(
@@ -130,11 +136,14 @@ export function useBeautifier() {
   }, []);
 
   const handleModeChange = useCallback(
-    async (newMode: Mode) => {
+    (newMode: Mode) => {
       setMode(newMode);
       if (newMode === "auto" && input.trim()) {
-        const lang = await detectLanguage(input);
-        setDetectedLang(lang === "plaintext" ? null : lang);
+        if (detectTimer.current) clearTimeout(detectTimer.current);
+        detectTimer.current = setTimeout(async () => {
+          const lang = await detectLanguage(input);
+          setDetectedLang(lang === "plaintext" ? null : lang);
+        }, 0);
       }
     },
     [input]
@@ -152,6 +161,9 @@ export function useBeautifier() {
 
   const handleFormat = useCallback(async () => {
     if (!input.trim()) return;
+    // Capture input at the moment the user triggered format to avoid
+    // the value shifting under us during the async lang-detection await.
+    const capturedInput = input;
     setIsFormatting(true);
     setErrorLine(null);
     try {
@@ -160,11 +172,12 @@ export function useBeautifier() {
         showError(t("langNotDetectedError"));
         return;
       }
-      const result = formatCode(input, lang);
+      const result = formatCode(capturedInput, lang);
       setOutput(result);
-      addEntry(input, result, lang);
+      addEntry(capturedInput, result, lang);
+      if (successTimer.current) clearTimeout(successTimer.current);
       setFormatSuccess(true);
-      setTimeout(() => setFormatSuccess(false), 1500);
+      successTimer.current = setTimeout(() => setFormatSuccess(false), 1500);
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : t("invalidCodeError");
       // Extract error line from parse errors (primarily JSON)
@@ -173,7 +186,7 @@ export function useBeautifier() {
         const posMatch = e.message.match(/at position (\d+)/);
         if (posMatch) {
           const pos = parseInt(posMatch[1], 10);
-          line = input.slice(0, pos).split("\n").length;
+          line = capturedInput.slice(0, pos).split("\n").length;
         } else {
           const lineMatch = e.message.match(/\bline\s+(\d+)/i);
           if (lineMatch) line = parseInt(lineMatch[1], 10);
@@ -225,13 +238,16 @@ export function useBeautifier() {
       const encoded = encodeShare(JSON.stringify({ input, output }));
       const url = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
       navigator.clipboard.writeText(url).then(() => {
+        if (shareTimer.current) clearTimeout(shareTimer.current);
         setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 2000);
+        shareTimer.current = setTimeout(() => setShareCopied(false), 2000);
+      }).catch(() => {
+        showError(t("shareFailed"));
       });
     } catch {
-      // ignore clipboard errors
+      showError(t("shareFailed"));
     }
-  }, [input, output]);
+  }, [input, output, showError, t]);
 
   const handleRestoreDraft = useCallback(() => {
     const draft = draftRef.current;

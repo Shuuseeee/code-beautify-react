@@ -20,7 +20,14 @@ export function useHistory() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(HISTORY_KEY);
-      if (stored) setHistory(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.every(
+          (e) => e && typeof e.id === "string" && typeof e.input === "string"
+        )) {
+          setHistory(parsed as HistoryEntry[]);
+        }
+      }
     } catch {
       // ignore malformed storage
     }

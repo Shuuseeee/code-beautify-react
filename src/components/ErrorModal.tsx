@@ -19,10 +19,14 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
   const [isVisible, setIsVisible] = useState(open);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { reducedMotion } = useGsapReducedMotion();
 
   useEffect(() => {
-    if (open) setIsVisible(true);
+    if (open) {
+      setIsVisible(true);
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
+    }
   }, [open]);
 
   useIsomorphicLayoutEffect(() => {
@@ -59,6 +63,7 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
       onClick={onClose}
       role="alertdialog"
       aria-modal="true"
+      aria-labelledby="error-modal-title"
     >
       <div
         ref={panelRef}
@@ -68,11 +73,11 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
         <div className="flex items-center justify-between gap-3 h-11 px-3 border-b border-line bg-surface-sunk">
           <div className="flex items-center gap-2 min-w-0">
             <TriangleAlert size={14} strokeWidth={2} className="text-danger shrink-0" />
-            <h2 className="text-base font-semibold text-fg truncate">
+            <h2 id="error-modal-title" className="text-base font-semibold text-fg truncate">
               {t("errorModalTitle")}
             </h2>
           </div>
-          <button onClick={onClose} className={btnIcon} aria-label={t("close")}>
+          <button ref={closeButtonRef} type="button" onClick={onClose} className={btnIcon} aria-label={t("close")}>
             <X size={14} strokeWidth={1.75} />
           </button>
         </div>

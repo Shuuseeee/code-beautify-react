@@ -16,6 +16,7 @@ export function DraftBanner({ onRestore, onDismiss }: DraftBannerProps) {
   const [visible, setVisible] = useState(false);
   const barRef = useRef<HTMLSpanElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dismissedRef = useRef(false);
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
 
@@ -44,7 +45,10 @@ export function DraftBanner({ onRestore, onDismiss }: DraftBannerProps) {
     bar.style.transition = `transform ${ms}ms linear`;
     requestAnimationFrame(() => {
       bar.style.transform = "scaleX(0)";
-      timerRef.current = setTimeout(() => onDismissRef.current(), ms);
+      timerRef.current = setTimeout(() => {
+        dismissedRef.current = true;
+        onDismissRef.current();
+      }, ms);
     });
   }
 
@@ -58,6 +62,7 @@ export function DraftBanner({ onRestore, onDismiss }: DraftBannerProps) {
   }
 
   function resume() {
+    if (dismissedRef.current) return;
     drain(Math.max(100, currentScale() * DURATION));
   }
 
