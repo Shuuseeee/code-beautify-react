@@ -38,14 +38,14 @@ export const btnIconDanger =
 
 /* ── Containers ───────────────────────────────────────────────────────────── */
 export const panel =
-  "flex flex-col min-w-0 rounded-lg border border-line bg-surface overflow-hidden";
+  "flex flex-col min-w-0 rounded-xl border border-line bg-surface overflow-hidden";
 
 /** Panel title strip. Sunk one step so the content reads as the foreground. */
 export const panelHeader =
   "flex items-center gap-2 h-9 px-3 border-b border-line bg-surface-sunk select-none shrink-0";
 
 export const popover =
-  "rounded-lg border border-line bg-surface-raise shadow-pop overflow-hidden pop-in";
+  "rounded-lg border border-line bg-surface-raise shadow-[0_16px_40px_rgba(0,0,0,0.14)] overflow-hidden pop-in";
 
 export const popoverItem =
   `w-full flex items-center gap-2.5 px-5 h-9 text-[16px] text-fg text-left hover:bg-hover ${press}`;

@@ -37,12 +37,14 @@ export function useBeautifier() {
   const [diffOpen, setDiffOpen] = useState(false);
   const [errorLine, setErrorLine] = useState<number | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
   const [error, setError] = useState<{ open: boolean; message: string }>({
     open: false,
     message: "",
   });
 
   const detectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const draftRef = useRef<string | null>(null);
 
   // ── Restore from URL hash or auto-save on mount ──
   useEffect(() => {
@@ -61,7 +63,10 @@ export function useBeautifier() {
     } else {
       try {
         const saved = localStorage.getItem(AUTOSAVE_KEY);
-        if (saved) setInput(saved);
+        if (saved) {
+          draftRef.current = saved;
+          setHasDraft(true);
+        }
       } catch {
         // ignore storage errors
       }
@@ -225,6 +230,28 @@ export function useBeautifier() {
     }
   }, [input, output]);
 
+  const handleRestoreDraft = useCallback(() => {
+    const draft = draftRef.current;
+    draftRef.current = null;
+    setHasDraft(false);
+    if (!draft) return;
+    setInput(draft);
+    if (detectTimer.current) clearTimeout(detectTimer.current);
+    detectTimer.current = setTimeout(async () => {
+      const lang = await detectLanguage(draft);
+      setDetectedLang(lang === "plaintext" ? null : lang);
+    }, 0);
+  }, []);
+
+  const handleDismissDraft = useCallback(() => {
+    try {
+      localStorage.removeItem(AUTOSAVE_KEY);
+    } catch {
+      // ignore
+    }
+    setHasDraft(false);
+  }, []);
+
   const handleRestoreHistory = useCallback((entry: HistoryEntry) => {
     setInput(entry.input);
     setOutput(entry.output);
@@ -275,6 +302,7 @@ export function useBeautifier() {
     error,
     errorLine,
     shareCopied,
+    hasDraft,
     history,
     handleInputChange,
     clearInput,
@@ -287,6 +315,8 @@ export function useBeautifier() {
     handleRestoreHistory,
     removeHistoryEntry: removeEntry,
     clearHistory,
+    handleRestoreDraft,
+    handleDismissDraft,
     setOutput,
     setDiffOpen,
     closeError: () => setError({ open: false, message: "" }),

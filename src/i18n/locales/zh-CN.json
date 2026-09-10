@@ -48,5 +48,7 @@
   "shareCode": "分享",
   "shareLinkCopied": "链接已复制",
   "more": "更多",
-  "wrapLines": "自动换行"
+  "wrapLines": "自动换行",
+  "draftFound": "检测到上次的未保存草稿。",
+  "draftRestore": "恢复"
 }

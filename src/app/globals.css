@@ -71,13 +71,24 @@
   --diff-gutter-fg:  rgba(16, 23, 26, 0.28);
   --diff-void:       rgba(16, 23, 26, 0.018);
 
-  /* Shape — from Coral Shape and Form tokens:
-     --now-actionable--border-radius: 6px (buttons)
-     --now-container--border-radius:  4px (containers/cards)
-     --now-window--border-radius:    12px (modals)              */
+  /* Shape */
   --r-sm: 4px;
   --r-md: 6px;
-  --r-lg: 16px;
+  --r-lg: 10px;
+
+  /* ServiceNow brand tokens — consumed by sn-* Tailwind utilities */
+  --sn-topnav:    #0c1a24;
+  --sn-green:     #63df4e;
+  --sn-green-btn: #4aa72e;
+  --sn-ink:       #1d1d1d;
+  --sn-ink2:      #151920;
+  --sn-muted:     #515151;
+  --sn-ondark:    #eaebed;
+  --sn-link:      #02506b;
+  --sn-link2:     #007393;
+  --sn-wash:      #f5f6f7;
+  --sn-line:      #e3e3e3;
+  --sn-navy:      #032d42;
 
   --shadow-pop:   0 0 0 1px var(--border), 0 16px 40px rgba(0, 0, 0, 0.14);
   --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.35);
@@ -159,6 +170,11 @@
 }
 
 @layer base {
+  * {
+    border-color: var(--line);
+    outline-color: color-mix(in oklch, var(--accent) 50%, transparent);
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

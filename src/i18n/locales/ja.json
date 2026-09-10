@@ -48,5 +48,7 @@
   "shareCode": "共有",
   "shareLinkCopied": "リンクをコピー",
   "more": "その他",
-  "wrapLines": "折り返し"
+  "wrapLines": "折り返し",
+  "draftFound": "前回の未保存の下書きが見つかりました。",
+  "draftRestore": "復元"
 }

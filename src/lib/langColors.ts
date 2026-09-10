@@ -10,7 +10,7 @@ export const LANG_COLOR = {
   xml:        { dot: "#F5820D", text: "#B85E00", textDark: "#F5A04D" },
   css:        { dot: "#2965F1", text: "#1E4BC4", textDark: "#6C9BFF" },
   scss:       { dot: "#BF4080", text: "#8C2558", textDark: "#E07AB0" },
-  javascript: { dot: "#F0DB4F", text: "#8A7A0A", textDark: "#F0DB4F" },
+  javascript: { dot: "#A8A8A8", text: "#6E6C68", textDark: "#A5A49F" },
   json:       { dot: "#8B8A86", text: "#6E6C68", textDark: "#A5A49F" },
 } as const;
 

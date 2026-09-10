@@ -62,7 +62,7 @@ export default function ErrorModal({ open, message, onClose }: ErrorModalProps) 
     >
       <div
         ref={panelRef}
-        className="w-full max-w-md rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
+        className="w-full max-w-md rounded-xl border border-line bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.35)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 h-11 px-3 border-b border-line bg-surface-sunk">

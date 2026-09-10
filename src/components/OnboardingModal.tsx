@@ -92,7 +92,7 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
     >
       <div
         ref={panelRef}
-        className="w-full max-w-lg rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
+        className="w-full max-w-lg rounded-xl border border-line bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.35)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 px-4 pt-4 pb-3.5 border-b border-line">

@@ -11,6 +11,7 @@ import { useBeautifier } from "@/hooks/useBeautifier";
 import { useI18n } from "@/i18n/context";
 import { useShakeAnimation } from "@/hooks/useShakeAnimation";
 import { isServiceNowCode } from "@/lib/monacoServiceNow";
+import { DraftBanner } from "@/components/DraftBanner";
 
 export default function HomePage() {
   const { theme } = useThemeContext();
@@ -19,11 +20,12 @@ export default function HomePage() {
 
   const {
     input, output, mode, detectedLang, isFormatting, formatSuccess,
-    shakeInput, diffOpen, error, errorLine, shareCopied, history,
+    shakeInput, diffOpen, error, errorLine, shareCopied, hasDraft, history,
     handleInputChange, clearInput,
     handleModeChange, handleFormat,
     handleRemoveComments, handleCompare, handleClearAll,
     handleShare, handleRestoreHistory, removeHistoryEntry, clearHistory,
+    handleRestoreDraft, handleDismissDraft,
     setOutput, setDiffOpen, closeError,
   } = useBeautifier();
 
@@ -35,20 +37,26 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="flex-1 flex flex-col max-w-[1500px] mx-auto w-full px-3 md:px-4 py-3 md:py-4 gap-3">
+      <div className="flex-1 flex flex-col max-w-[1440px] mx-auto w-full px-6 py-6 gap-4">
         <ModeSelector
           mode={mode}
           detectedLang={detectedLang}
           isSnow={isSnow}
           onChange={handleModeChange}
         />
+        {hasDraft && (
+          <DraftBanner
+            onRestore={handleRestoreDraft}
+            onDismiss={handleDismissDraft}
+          />
+        )}
 
         {/*
           DOM order: Left → Right → ActionPanel
           Desktop visual order (via CSS order): Left(1) → ActionPanel(2) → Right(3)
           This gives the tab sequence: left textarea → right textarea → action buttons
         */}
-        <div className="flex flex-col md:flex-row gap-3 md:flex-1 md:min-h-0">
+        <div className="flex flex-col md:flex-row gap-4 md:flex-1 md:min-h-0">
           {/* Left panel — DOM first, visual first */}
           <div ref={shakeRef} className="h-[38vh] md:h-auto md:flex-1 md:min-h-0 flex flex-col md:order-1">
             <CodePanel
@@ -58,7 +66,7 @@ export default function HomePage() {
               onClear={clearInput}
               placeholder={t("inputPlaceholder")}
               errorLine={errorLine}
-              language={detectedLang ?? "plaintext"}
+              language={mode !== "auto" ? mode : (detectedLang ?? "plaintext")}
             />
           </div>
 
@@ -71,7 +79,7 @@ export default function HomePage() {
               onClear={() => setOutput("")}
               placeholder={t("outputPlaceholder")}
               scrollTopOnChange
-              language={detectedLang ?? "plaintext"}
+              language={mode !== "auto" ? mode : (detectedLang ?? "plaintext")}
             />
           </div>
 

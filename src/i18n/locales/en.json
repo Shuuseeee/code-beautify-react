@@ -48,5 +48,7 @@
   "shareCode": "Share",
   "shareLinkCopied": "Link Copied!",
   "more": "More",
-  "wrapLines": "Wrap Lines"
+  "wrapLines": "Wrap Lines",
+  "draftFound": "A draft from your last session was found.",
+  "draftRestore": "Restore"
 }

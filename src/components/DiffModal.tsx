@@ -125,7 +125,7 @@ export default function DiffModal({
     >
       <div
         ref={panelRef}
-        className="w-full flex flex-col rounded-lg border border-line bg-surface shadow-modal overflow-hidden"
+        className="w-full flex flex-col rounded-xl border border-line bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.35)] overflow-hidden"
         style={{ maxWidth: "min(96vw, 1600px)", height: "calc(100vh - 3rem)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -135,7 +135,8 @@ export default function DiffModal({
             <h2 className="text-base font-semibold text-fg truncate">
               {t("compareModalTitle")}
             </h2>
-            <span className="px-1.5 h-[18px] inline-flex items-center rounded-[4px] border border-line text-2xs font-mono text-fg-muted shrink-0">
+            <span className="px-1.5 h-[18px] inline-flex items-center gap-1 rounded-[4px] border border-line text-2xs font-mono text-fg-muted shrink-0">
+              {isSnow && <span aria-hidden className="h-[6px] w-[6px] rounded-full shrink-0" style={{ background: "#63df4e" }} />}
               {isSnow ? "ServiceNow" : monacoLang}
             </span>
           </div>

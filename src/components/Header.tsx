@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sun, Moon, ChevronDown, CircleHelp, Check } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,10 +9,7 @@ import type { Theme } from "@/hooks/useTheme";
 import { popover, popoverItem, press } from "@/lib/ui";
 import { useChevronAnimation } from "@/hooks/useChevronAnimation";
 import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
-
-gsap.registerPlugin(useGSAP);
 
 export type { Theme };
 
@@ -41,37 +38,7 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
   const chevronRef = useChevronAnimation(localeOpen);
   const pathname = usePathname();
 
-  // ── Sliding indicator (exact GlobalNav pattern from SN clone) ──────────────
-  // target = hovered item if hovering, else the active page link.
-  // Color: green (#62d84e) when target === active page, white when just hovering.
   const [hovered, setHovered] = useState<string | null>(null);
-  const navRef = useRef<HTMLElement>(null);
-  const indRef = useRef<HTMLSpanElement>(null);
-  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
-
-  const activeHref = NAV_LINKS.find(({ href }) => href === pathname)?.href ?? null;
-  const target = hovered ?? activeHref;
-
-  useLayoutEffect(() => {
-    const ind = indRef.current;
-    const nav = navRef.current;
-    if (!ind || !nav) return;
-
-    const measure = () => {
-      const el = target ? linkRefs.current[target] : null;
-      if (!el) { ind.style.opacity = "0"; return; }
-      const n = nav.getBoundingClientRect();
-      const b = el.getBoundingClientRect();
-      ind.style.left  = `${b.left - n.left}px`;
-      ind.style.width = `${b.width}px`;
-      ind.style.opacity = "1";
-      ind.style.backgroundColor = target === activeHref ? "#62d84e" : "#ffffff";
-    };
-
-    // On locale change tab labels re-render, fonts may shift width —
-    // wait for the font stack to settle before measuring.
-    document.fonts.ready.then(measure);
-  }, [target, activeHref, locale]);
 
   // ── Locale popover animation ───────────────────────────────────────────────
   useIsomorphicLayoutEffect(() => {
@@ -102,62 +69,60 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 h-16 w-full bg-[#0c1a24] text-white">
-      <div className="mx-auto flex h-full max-w-[1440px] items-center px-6">
+      <div className="mx-auto flex h-full max-w-[1440px] items-stretch px-6">
 
         {/* Wordmark */}
-        <span className="mr-8 shrink-0 select-none text-[15px] font-semibold tracking-tight">
+        <span className="mr-8 flex shrink-0 items-center select-none text-[15px] font-semibold tracking-tight text-sn-ondark">
           Code Beautify for S-NOW Dev
         </span>
 
-        {/* Nav — exact GlobalNav structure */}
+        {/* Nav — each link owns its bar, grows from center (exact GlobalNav pattern) */}
         <nav
-          ref={navRef}
-          className="relative hidden items-center gap-6 self-stretch lg:flex"
+          className="hidden items-center gap-1 self-stretch lg:flex"
           onMouseLeave={() => setHovered(null)}
         >
-          {NAV_LINKS.map(({ href, labelKey }) => (
-            <Link
-              key={href}
-              href={href}
-              ref={(el) => { linkRefs.current[href] = el; }}
-              aria-current={pathname === href ? "page" : undefined}
-              onMouseEnter={() => setHovered(href)}
-              className="flex h-16 items-center text-sm font-medium text-white/90 transition-colors hover:text-white"
-            >
-              {t(labelKey)}
-            </Link>
-          ))}
-
-          {/* Sliding indicator: white on hover, green on active page */}
-          <span
-            ref={indRef}
-            aria-hidden
-            className="pointer-events-none absolute bottom-0 left-0 h-[3px] w-0 opacity-0"
-            style={{
-              transition: "left 0.3s ease-in-out, width 0.3s ease-in-out, background-color 0.3s ease-in-out, opacity 0.2s",
-            }}
-          />
+          {NAV_LINKS.map(({ href, labelKey }) => {
+            const isActivePage = pathname === href;
+            const show = isActivePage || hovered === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={isActivePage ? "page" : undefined}
+                onMouseEnter={() => setHovered(href)}
+                className="relative flex items-center self-stretch gap-1 px-3 text-[15px] font-normal text-white/90 transition-colors hover:text-white"
+              >
+                {t(labelKey)}
+                <span
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 h-[4px] origin-center transition-transform duration-300 ease-in-out ${
+                    show ? "scale-x-100" : "scale-x-0"
+                  } ${isActivePage ? "bg-[#63df4e]" : "bg-white/40"}`}
+                />
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right controls */}
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-5 self-center">
 
           <button
             onClick={onHelp}
             aria-label="Help"
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+            className={`flex items-center justify-center text-white/70 hover:opacity-80 transition-opacity ${press}`}
           >
-            <CircleHelp size={17} strokeWidth={1.75} />
+            <CircleHelp size={20} strokeWidth={1.75} />
           </button>
 
           <button
             onClick={onToggleTheme}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+            className={`flex items-center justify-center text-white/70 hover:opacity-80 transition-opacity ${press}`}
           >
             {theme === "dark"
-              ? <Sun  size={17} strokeWidth={1.75} />
-              : <Moon size={17} strokeWidth={1.75} />}
+              ? <Sun  size={20} strokeWidth={1.75} />
+              : <Moon size={20} strokeWidth={1.75} />}
           </button>
 
           {/* Locale dropdown */}
@@ -166,11 +131,11 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
               onClick={() => setLocaleOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={localeOpen}
-              className={`flex h-8 items-center gap-1 rounded-lg px-2.5 text-sm text-white/70 hover:bg-white/10 hover:text-white ${press}`}
+              className={`flex items-center gap-1 text-[15px] text-white/70 hover:opacity-80 transition-opacity ${press}`}
             >
               <span className="hidden sm:inline">{currentLocale.label}</span>
               <span className="sm:hidden">{currentLocale.short}</span>
-              <ChevronDown ref={chevronRef} size={13} strokeWidth={2.5} />
+              <ChevronDown ref={chevronRef} size={14} strokeWidth={2} className="opacity-80" />
             </button>
 
             {localeOpen && (

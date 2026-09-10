@@ -172,7 +172,8 @@ export default function CodePanel({
         <div className="flex items-center gap-2 min-w-0">
           <span className={eyebrow}>{label}</span>
           {isSnow ? (
-            <span className="px-1.5 h-[17px] inline-flex items-center rounded-[4px] border border-line text-2xs font-mono text-fg-muted">
+            <span className="px-1.5 h-[17px] inline-flex items-center gap-1 rounded-[4px] border border-line text-2xs font-mono text-fg-muted">
+              <span aria-hidden className="h-[6px] w-[6px] rounded-full shrink-0" style={{ background: "#63df4e" }} />
               ServiceNow
             </span>
           ) : monacoLang && monacoLang !== "plaintext" && (
