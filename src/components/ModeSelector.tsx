@@ -66,7 +66,7 @@ export default function ModeSelector({ mode, detectedLang, isSnow, onChange }: M
                 aria-hidden
                 className={`pointer-events-none absolute bottom-0 inset-x-0 h-[4px] origin-center transition-transform duration-300 ease-in-out ${
                   active || isHov ? "scale-x-100" : "scale-x-0"
-                } ${active ? "bg-accent" : "bg-line"}`}
+                } ${active ? "bg-[#63df4e]" : "bg-line"}`}
               />
             </button>
           );

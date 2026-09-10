@@ -95,9 +95,9 @@ export default function Header({ theme, onToggleTheme, onHelp }: HeaderProps) {
                 {t(labelKey)}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute inset-x-0 bottom-0 h-[4px] origin-center transition-transform duration-300 ease-in-out ${
-                    show ? "scale-x-100" : "scale-x-0"
-                  } ${isActivePage ? "bg-[#63df4e]" : "bg-white/40"}`}
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 h-[3px] origin-center transition-transform duration-300 ease-in-out ${
+                    show ? "scale-x-100" : "scale-x-0" 
+                  } ${isActivePage ? "bg-[#63df4e]" : "bg-white"}`}
                 />
               </Link>
             );
