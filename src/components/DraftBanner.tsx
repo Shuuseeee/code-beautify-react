@@ -29,21 +29,23 @@ export function DraftBanner({ onRestore, onDismiss }: DraftBannerProps) {
   function currentScale() {
     const bar = barRef.current;
     if (!bar) return 1;
-    const t = getComputedStyle(bar).transform;
-    if (!t || t === "none") return 1;
-    const m = t.match(/matrix\(([^)]+)\)/);
+    const transform = getComputedStyle(bar).transform;
+    if (!transform || transform === "none") return 1;
+    const m = transform.match(/matrix\(([^)]+)\)/);
     return m ? parseFloat(m[1].split(",")[0]) : 1;
   }
 
   function drain(ms: number) {
     const bar = barRef.current;
     if (!bar || ms <= 0) return;
-    requestAnimationFrame(() => {
-      bar.style.transition = `transform ${ms}ms linear`;
-      bar.style.transform = "scaleX(0)";
-    });
     clearTimer();
-    timerRef.current = setTimeout(() => onDismissRef.current(), ms);
+    // Set transition before rAF so the dismiss timer starts after the frame is committed,
+    // keeping the CSS animation and the timeout aligned.
+    bar.style.transition = `transform ${ms}ms linear`;
+    requestAnimationFrame(() => {
+      bar.style.transform = "scaleX(0)";
+      timerRef.current = setTimeout(() => onDismissRef.current(), ms);
+    });
   }
 
   function pause() {
@@ -97,12 +99,14 @@ export function DraftBanner({ onRestore, onDismiss }: DraftBannerProps) {
         <p className="flex-1 text-[15px] text-[#1d1d1d] dark:text-[#c8dae4]">{t("draftFound")}</p>
         <div className="flex items-center gap-3 shrink-0">
           <button
+            type="button"
             onClick={onRestore}
             className="text-[15px] font-medium text-[#02506b] dark:text-[#4db8d4] underline-offset-2 hover:underline transition-colors"
           >
             {t("draftRestore")}
           </button>
           <button
+            type="button"
             onClick={onDismiss}
             aria-label={t("close")}
             className="text-[#515151] dark:text-[#8baab5] transition-colors hover:text-[#1d1d1d] dark:hover:text-[#c8dae4]"

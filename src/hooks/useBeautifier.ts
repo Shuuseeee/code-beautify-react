@@ -235,6 +235,12 @@ export function useBeautifier() {
     draftRef.current = null;
     setHasDraft(false);
     if (!draft) return;
+    // Remove from localStorage so the banner doesn't reappear on the next page load
+    try {
+      localStorage.removeItem(AUTOSAVE_KEY);
+    } catch {
+      // ignore
+    }
     setInput(draft);
     if (detectTimer.current) clearTimeout(detectTimer.current);
     detectTimer.current = setTimeout(async () => {
@@ -244,6 +250,7 @@ export function useBeautifier() {
   }, []);
 
   const handleDismissDraft = useCallback(() => {
+    draftRef.current = null;
     try {
       localStorage.removeItem(AUTOSAVE_KEY);
     } catch {
