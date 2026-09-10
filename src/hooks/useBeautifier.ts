@@ -44,7 +44,7 @@ export function useBeautifier() {
   });
 
   const detectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const draftRef = useRef<string | null>(null);
+  const draftRef = useRef<{ input: string; output: string } | null>(null);
 
   // ── Restore from URL hash or auto-save on mount ──
   useEffect(() => {
@@ -64,11 +64,14 @@ export function useBeautifier() {
       try {
         const saved = localStorage.getItem(AUTOSAVE_KEY);
         if (saved) {
-          draftRef.current = saved;
-          setHasDraft(true);
+          const parsed = JSON.parse(saved) as { input: string; output: string };
+          if (parsed.input?.trim()) {
+            draftRef.current = parsed;
+            setHasDraft(true);
+          }
         }
       } catch {
-        // ignore storage errors
+        // ignore storage errors or malformed JSON
       }
     }
   }, []);
@@ -78,7 +81,7 @@ export function useBeautifier() {
     const timer = setTimeout(() => {
       try {
         if (input.trim()) {
-          localStorage.setItem(AUTOSAVE_KEY, input);
+          localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ input, output }));
         } else {
           localStorage.removeItem(AUTOSAVE_KEY);
         }
@@ -87,7 +90,7 @@ export function useBeautifier() {
       }
     }, 800);
     return () => clearTimeout(timer);
-  }, [input]);
+  }, [input, output]);
 
   const triggerShake = useCallback(() => {
     setShakeInput(true);
@@ -241,10 +244,11 @@ export function useBeautifier() {
     } catch {
       // ignore
     }
-    setInput(draft);
+    setInput(draft.input);
+    setOutput(draft.output);
     if (detectTimer.current) clearTimeout(detectTimer.current);
     detectTimer.current = setTimeout(async () => {
-      const lang = await detectLanguage(draft);
+      const lang = await detectLanguage(draft.input);
       setDetectedLang(lang === "plaintext" ? null : lang);
     }, 0);
   }, []);
