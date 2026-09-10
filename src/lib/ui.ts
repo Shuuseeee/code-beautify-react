@@ -22,12 +22,20 @@ export const btnPrimary =
 export const btnSecondary =
   `${btnBase} px-4 h-9 border border-line text-fg hover:bg-hover`;
 
+/** Green-outlined secondary — for the next most important action after the primary. */
+export const btnSecondaryGreen =
+  `${btnBase} px-4 h-9 border border-accent text-fg hover:bg-accent/10`;
+
 /** Touch-sized variants. Mobile taps need a 36px target; desktop rows are 32px. */
 export const btnPrimaryTouch =
   `${btnBase} px-4 h-10 justify-center bg-accent text-accent-fg hover:bg-accent-hover`;
 
 export const btnSecondaryTouch =
   `${btnBase} px-4 h-10 justify-center border border-line text-fg hover:bg-hover`;
+
+/** Touch-sized green-outlined secondary. */
+export const btnSecondaryGreenTouch =
+  `${btnBase} px-4 h-10 justify-center border border-accent text-fg hover:bg-accent/10`;
 
 /** Square icon-only. */
 export const btnIcon =

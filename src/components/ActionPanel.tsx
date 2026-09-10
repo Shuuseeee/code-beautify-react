@@ -10,7 +10,7 @@ import { useI18n } from "@/i18n/context";
 import { langDot } from "@/lib/langColors";
 import type { HistoryEntry } from "@/hooks/useHistory";
 import {
-  btnPrimary, btnSecondary, btnPrimaryTouch, btnSecondaryTouch,
+  btnPrimary, btnSecondary, btnPrimaryTouch, btnSecondaryTouch, btnSecondaryGreen, btnSecondaryGreenTouch,
   popover, popoverItem, kbd as kbdCls, press,
 } from "@/lib/ui";
 import { useChevronAnimation } from "@/hooks/useChevronAnimation";
@@ -217,7 +217,7 @@ export default function ActionPanel({
           {t("removeJsComments")}
         </button>
 
-        <button type="button" onClick={onCompare} className={btnSecondaryTouch}>
+        <button type="button" onClick={onCompare} className={btnSecondaryGreenTouch}>
           <GitCompare size={14} strokeWidth={1.75} />
           {t("compareCode")}
         </button>
@@ -302,7 +302,7 @@ export default function ActionPanel({
           )}
         </button>
 
-        <button type="button" onClick={onCompare} className={`${btnSecondary} ${wide}`}>
+        <button type="button" onClick={onCompare} className={`${btnSecondaryGreen} ${wide}`}>
           <span className="flex items-center gap-2">
             <GitCompare size={14} strokeWidth={1.75} />
             {t("compareCode")}
